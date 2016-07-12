@@ -1,0 +1,49 @@
+TRABALHO FINAL 1
+
+Bruno -   115150099
+
+Miguel -  116033119
+
+Rodrigo - 116015658
+
+Gabriel - 114055262
+
+Onde Fui Roubado
+================
+Site: http://www.ondefuiroubado.com.br/
+
+Cooperação: é possível denunciar crimes, com a possibilidade de gerar
+  estatísticas informativas sobre crimes.
+
+Coordenação: é possível reportar denúncias falsas de crimes
+
+Comunicação: as pessoas podem descrever os crimes, informando o que aconteceu,
+  e ainda outras pessoas podem comentar sobre o assunto.
+
+Reclame Aqui
+============
+Site: http://www.reclameaqui.com.br
+
+Cooperação: as pessoas informam suas experiências sobre o relacionamento
+  com empresas.
+
+Coordenação: existe uma coordenação interna, com objetivo de regular as
+  reclamações, exposição de informações indevidas e linguagem chulas.
+
+Comunicação: quando uma reclamação é feita é possível entrar em contato com
+  a empresa a partir do próprio site, e vice-versa.
+
+WikiLeaks
+=========
+Site: ???
+
+Cooperação: as pessoas entram com informações sobre pessoas, empresas e governos,
+  com o objetivo
+
+Coordenação: extremamente forte, feita internamente pelos próprios
+  administradores, onde os dados só são publicados com a certeza de sua
+  veracidade.
+
+Comunicação: as pessoas podem compartilhar os dados para denúnicas.
+
+Classificação: e-governo
