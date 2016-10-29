@@ -7,28 +7,31 @@ import sys as sys
 import numpy as np
 from matplotlib import pyplot as plt
 from matplotlib import cm as cm
+from matplotlib.colors import LinearSegmentedColormap
 import scipy.linalg as la
+
+C2K = lambda c: 273.15 + c
 
 ambiente1 = [
     5.0,  # L: comprimento do fio
     0.0,  # a: posição do início do fio
     2.0,  # tf: duração temporal simulada
     
-    '20.0 if 2 < x < 4 else 10.0', # f(x)
+    'C2K(20.0) if 2 < x < 4 else C2K(10.0)', # f(x)
     
-    '0.0', # M(t): temperatura do meio ambiente
+    'C2K(0.0)', # M(t): temperatura do meio ambiente
     
-    '-10.0', # h(x): func. de contorno esquerda
+    '-C2K(10.0)', # h(x): func. de contorno esquerda
     1.0, # alpha: coef. de T no lado esquerdo
     -1.0, # rho:   coef. de dT no lado esquerdo
     
-    '10.0', # g(x): func. de contorno direita
+    'C2K(10.0)', # g(x): func. de contorno direita
     1.0, # beta:  coef. de T no lado direito
     1.0, # sigma: coef. de dt no lado direito
     
-    1.0,  # p: difusividade térmica
-    -1.0, # q: coef. de absorção da temp. da barra pelo meio ambiente
-    -1.0, # r: coef. de geração de temp.
+    1.0,  # p: difusividade térmica do fio
+    -0.0, # q: coef. de absorção da temp. do fio pelo meio ambiente
+    -0.0, # r: coef. de geração de temp.
     
     25, # Nx: número de discretizações espaciais
     31, # Nt: número de discretizações temporais
@@ -52,7 +55,7 @@ custom = [
     0.1, # coef. de dt no lado direito
     
     1.0,  # difusividade térmica
-    -1.0, # coef. de absorção da temp. da barra pelo meio ambiente
+    -1.0, # coef. de absorção da temp. do fio pelo meio ambiente
     -1.0, # coef. de geração de temp.
     
     25, # número de discretizações espaciais
@@ -78,6 +81,19 @@ if abs(alpha*dx - rho) < 1e-7:
 
 
 paleta = 'afmhot'
+#paleta = LinearSegmentedColormap('custom_cm',
+#         {'red':  ((0.0, 0.0, 0.0),   # <- at 0.0, the red component is 0
+#                   (0.5, 1.0, 1.0),   # <- at 0.5, the red component is 1
+#                   (1.0, 0.0, 0.0)),  # <- at 1.0, the red component is 0
+#
+#         'green': ((0.0, 0.0, 0.0),   # <- etc.
+#                   (0.5, 1.0, 1.0),
+#                   (1.0, 0.0, 0.0)),
+#
+#         'blue':  ((0.0, 0.0, 0.0),
+#                   (0.5, 1.0, 1.0),
+#                   (1.0, 0.0, 0.0))
+#         })
 
 T = []
 T0 = []
