@@ -50,7 +50,6 @@ dx = Lx/Nx
 dy = Ly/Ny
 dt = tf/Nt
 fn = lambda j, k, i: f(x0 + j*dx, y0 + k*dy, i*dt)
-Nx1 = Nx + 1
 
 
 T = [[]]
@@ -80,6 +79,9 @@ print '--'*32
 print 'Função f(x) que define as temperaturas iniciais na chapa'
 drawPlate(T[0], paleta)
 
+def getIndex(j,k):
+    return j-1 + (k-1)*Nx
+
 def TT(j,k):
     #print (j,k)
     if j==0 and k==0: return 0.0
@@ -90,10 +92,57 @@ def TT(j,k):
     if j==Nx+1: return Td
     if k==0: return Ts
     if k==Ny+1: return Ti
-    return T[0][j-1 + (k-1)*Nx]
+    return T[0][getIndex(j,k)]
 
 # montando a matriz que representa o sistema a ser resolvido
 # essa matriz não varia com o tempo
+N = Nx*Ny
+bandsDic = {}
+def set_banded(lin, col, val):
+    key = abs(lin-col)
+    if (abs(val) <= 1e-7):
+        if (key in bandsDic):
+            bandsDic[key][max((lin,col))] = 0.0
+    else:
+        if (not key in bandsDic):
+            bandsDic[key] = [-1.0]*N
+        bandsDic[key][max((lin,col))] = val
+
+for linY in xrange(1, Ny+1):
+    for linX in xrange(1, Nx+1):
+        for colY in xrange(1, Ny+1):
+            for colX in xrange(1, Nx+1):
+                val = 0.0
+                
+                if ((colX, colY) == (linX - 1, linY)):
+                    val = -p*dt*dy*dy
+                elif ((colX, colY) == (linX + 1, linY)):
+                    val = -p*dt*dy*dy
+                elif ((colX, colY) == (linX, linY - 1)):
+                    val = -p*dt*dx*dx
+                elif ((colX, colY) == (linX, linY + 1)):
+                    val = -p*dt*dx*dx
+                elif ((colX, colY) == (linX, linY)):
+                    val = 4*dx*dx*dy*dy + 2*p*dt*(dx*dx + dy*dy) - q*dt*dx*dy*(dx + dy)
+                
+                set_banded(getIndex(linX, linY), getIndex(colX, colY), val)
+
+
+bandKeys = range(0, max(bandsDic.keys())+1)
+bandKeys.sort()
+bandKeys.reverse()
+bands = []
+for key in bandKeys:
+    if (key in bandsDic):
+        bands.append(bandsDic[key])
+    else:
+        bands.append([-1.0]*key + [0.0]*(N-key))
+bands = np.matrix(bands)
+#print 'bands:', bands
+
+choA = la.cholesky_banded(bands, lower=False)
+
+
 lines = []
 for linY in xrange(1, Ny+1):
     for linX in xrange(1, Nx+1):
@@ -122,17 +171,14 @@ print 'Matriz A do sistema Ax=b, que será aplicada sucessivamente'
 draw(matA, cm.coolwarm)
 
 
-print matA
-print np.shape(matA)
-print 'Is symmetric:', (matA.transpose() == matA).all()
-print 'Is positive definite:', np.all(np.linalg.eigvals(matA) > 0)
-print 'Eigenvalues:', np.linalg.eigvals(matA)
+#print matA
+#print np.shape(matA)
+#print 'Is symmetric:', (matA.transpose() == matA).all()
+#print 'Is positive definite:', np.all(np.linalg.eigvals(matA) > 0)
+#print 'Eigenvalues:', np.linalg.eigvals(matA)
 
-# apesar da matriz ser simétrica e definida positiva, não consegui usar o
-# método cholesky_banded... ele diz que a matriz não é definida positiva
-# não consegui achar o motivo, infelizmente!
-#choA = la.cholesky_banded(matA)
-choFacA = la.cho_factor(matA)
+
+#choFacA = la.cho_factor(matA)
 
 # montando o vetor resultado do sistema
 # esse vetor varia com o tempo, e deve ser remontado a cada iteração de tempo
@@ -179,13 +225,13 @@ y = np.arange(yi, yf+1, (yf+1-yi)/(numy))
 X,Y = np.meshgrid(x, y)
 
 def drawFrame(i):
-    print ''
+    #print ''
     print 'i:',i
     gridT = np.reshape(T[0], (Nx, Ny))
-    print 'gridT:', shape(gridT)
+    #print 'gridT:', shape(gridT)
     #print gridT
-    print 'x:',shape(x)
-    print 'y:',shape(y)
+    #print 'x:',shape(x)
+    #print 'y:',shape(y)
     z = im.zoom(gridT, szmul, order=3)
     extent = (xi, xf, yf, yi)
     ax.imshow(z, extent=extent, cmap=paleta, interpolation="nearest", vmin=0.0, vmax=vmax)
@@ -194,10 +240,13 @@ def drawFrame(i):
     
     # calculando os valores para o próximo frame da animação
     vecB = calcNextTimeResultVec(i)
+    #print vecB
     #vecR = la.solve(matA, vecB)
-    #vecR = la.cho_solve_banded(choA, vecB)
-    vecR = la.cho_solve(choFacA, vecB)
+    #print 'choFacA:', choFacA
+    vecR = la.cho_solve_banded((choA, False), vecB)
+    #vecR = la.cho_solve(choFacA, vecB)
     vecR = list(vecR.flat)
+    #print 'vecR:', vecR
     T[0] = vecR
 
 # função de animação de cada frame
