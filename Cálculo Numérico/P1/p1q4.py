@@ -75,15 +75,15 @@ def drawPlate(data, cmap):
     ax1.imshow(data, interpolation="nearest", cmap=cmap, vmin=0.0, vmax=vmax)
     plt.show()
 
-print '--'*32
-print 'Função f(x) que define as temperaturas iniciais na chapa'
+print ('--'*32)
+print ('Função f(x) que define as temperaturas iniciais na chapa')
 drawPlate(T[0], paleta)
 
 def getIndex(j,k):
     return j-1 + (k-1)*Nx
 
 def TT(j,k):
-    #print (j,k)
+    #print ((j,k))
     if j==0 and k==0: return 0.0
     if j==0 and k==Ny+1: return 0.0
     if j==Nx+1 and k==0: return 0.0
@@ -138,7 +138,7 @@ for key in bandKeys:
     else:
         bands.append([-1.0]*key + [0.0]*(N-key))
 bands = np.matrix(bands)
-#print 'bands:', bands
+#print ('bands:', bands)
 
 choA = la.cholesky_banded(bands, lower=False)
 
@@ -166,16 +166,16 @@ for linY in xrange(1, Ny+1):
         lines.append(cols)
 matA = np.matrix(lines)
 
-print '--'*32
-print 'Matriz A do sistema Ax=b, que será aplicada sucessivamente'
+print ('--'*32)
+print ('Matriz A do sistema Ax=b, que será aplicada sucessivamente')
 draw(matA, cm.coolwarm)
 
 
-#print matA
-#print np.shape(matA)
-#print 'Is symmetric:', (matA.transpose() == matA).all()
-#print 'Is positive definite:', np.all(np.linalg.eigvals(matA) > 0)
-#print 'Eigenvalues:', np.linalg.eigvals(matA)
+#print (matA)
+#print (np.shape(matA))
+#print ('Is symmetric:', (matA.transpose() == matA).all())
+#print ('Is positive definite:', np.all(np.linalg.eigvals(matA) > 0))
+#print ('Eigenvalues:', np.linalg.eigvals(matA))
 
 
 #choFacA = la.cho_factor(matA)
@@ -192,7 +192,7 @@ def calcNextTimeResultVec(i):
             res += p*dt*dy*dy*(TT(j+1, k) + TT(j-1, k))
             res += p*dt*dx*dx*(TT(j, k+1) + TT(j, k-1))
             res += (4*dx*dx*dy*dy - 2*p*dt*(dx*dx + dy*dy) + q*dt*dx*dy*(dx + dy))*TT(j, k)
-            #print ''
+            #print ('')
             res += 4*r*dt*dx*dx*dy*dy*M
             
             if (j == 1):
@@ -225,13 +225,13 @@ y = np.arange(yi, yf+1, (yf+1-yi)/(numy))
 X,Y = np.meshgrid(x, y)
 
 def drawFrame(i):
-    #print ''
-    print 'i:',i
+    #print ('')
+    print ('i:',i)
     gridT = np.reshape(T[0], (Nx, Ny))
-    #print 'gridT:', shape(gridT)
-    #print gridT
-    #print 'x:',shape(x)
-    #print 'y:',shape(y)
+    #print ('gridT:', shape(gridT))
+    #print (gridT)
+    #print ('x:',shape(x))
+    #print ('y:',shape(y))
     z = im.zoom(gridT, szmul, order=3)
     extent = (xi, xf, yf, yi)
     ax.imshow(z, extent=extent, cmap=paleta, interpolation="nearest", vmin=0.0, vmax=vmax)
@@ -240,13 +240,13 @@ def drawFrame(i):
     
     # calculando os valores para o próximo frame da animação
     vecB = calcNextTimeResultVec(i)
-    #print vecB
+    #print (vecB)
     #vecR = la.solve(matA, vecB)
-    #print 'choFacA:', choFacA
+    #print ('choFacA:', choFacA)
     vecR = la.cho_solve_banded((choA, False), vecB)
     #vecR = la.cho_solve(choFacA, vecB)
     vecR = list(vecR.flat)
-    #print 'vecR:', vecR
+    #print ('vecR:', vecR)
     T[0] = vecR
 
 # função de animação de cada frame
