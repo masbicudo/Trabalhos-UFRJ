@@ -21,11 +21,11 @@ ambiente1 = [
     
     'C2K(0.0)', # M(t): temperatura do meio ambiente
     
-    '-C2K(10.0)', # h(x): func. de contorno esquerda
+    '-C2K(10.0)', # h(t): func. de contorno esquerda
     1.0, # alpha: coef. de T no lado esquerdo
     -1.0, # rho:   coef. de dT no lado esquerdo
     
-    'C2K(10.0)', # g(x): func. de contorno direita
+    'C2K(10.0)', # g(t): func. de contorno direita
     1.0, # beta:  coef. de T no lado direito
     1.0, # sigma: coef. de dt no lado direito
     
@@ -46,11 +46,11 @@ custom = [
     
     '5.0', # M(t) - temperatura do meio ambiente
     
-    '0.0', # h(x)
+    '0.0', # h(t)
     1.0, # coef. de T no lado esquerdo
     0.1,   # coef. de dT no lado esquerdo
     
-    '0.0', # g(x)
+    '0.0', # g(t)
     1.0,  # coef. de T no lado direito
     0.1, # coef. de dt no lado direito
     
@@ -65,8 +65,8 @@ custom = [
 
 L,a,tf,f,M,h,alpha,rho,g,beta,sigma,p,q,r,Nx,Nt = ambiente1
 f = eval('lambda x:'+f)
-h = eval('lambda x:'+h)
-g = eval('lambda x:'+g)
+h = eval('lambda t:'+h)
+g = eval('lambda t:'+g)
 M = eval('lambda t:'+M)
 
 
@@ -81,19 +81,6 @@ if abs(alpha*dx - rho) < 1e-7:
 
 
 paleta = 'afmhot'
-#paleta = LinearSegmentedColormap('custom_cm',
-#         {'red':  ((0.0, 0.0, 0.0),   # <- at 0.0, the red component is 0
-#                   (0.5, 1.0, 1.0),   # <- at 0.5, the red component is 1
-#                   (1.0, 0.0, 0.0)),  # <- at 1.0, the red component is 0
-#
-#         'green': ((0.0, 0.0, 0.0),   # <- etc.
-#                   (0.5, 1.0, 1.0),
-#                   (1.0, 0.0, 0.0)),
-#
-#         'blue':  ((0.0, 0.0, 0.0),
-#                   (0.5, 1.0, 1.0),
-#                   (1.0, 0.0, 0.0))
-#         })
 
 T = []
 T0 = []
