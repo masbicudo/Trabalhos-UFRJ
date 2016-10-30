@@ -60,24 +60,24 @@ for k in xrange(1, Ny+1):
 vmin = min(T[0])
 vmax = max(T[0])
 
-def draw(data, cmap):
+def draw(data, cmap, title):
     fig = plt.figure()
     ax1 = fig.add_subplot(111)
     cax = ax1.imshow(data, interpolation="nearest", cmap=cmap)
     fig.colorbar(cax, shrink=0.75, aspect=5)
     ax1.grid(True)
+    ax1.set_title(title)
     plt.show()
 
-def drawPlate(data, cmap):
+def drawPlate(data, cmap, title):
     data = np.reshape(data, (Nx, Ny))
     fig = plt.figure()
     ax1 = fig.add_subplot(111)
     ax1.imshow(data, interpolation="nearest", cmap=cmap, vmin=0.0, vmax=vmax)
+    ax1.set_title(title)
     plt.show()
 
-print ('--'*32)
-print ('Função f(x) que define as temperaturas iniciais na chapa')
-drawPlate(T[0], paleta)
+drawPlate(T[0], paleta, u'Função f(x) que define as temperaturas iniciais na chapa')
 
 def getIndex(j,k):
     return j-1 + (k-1)*Nx
@@ -140,35 +140,35 @@ for key in bandKeys:
 bands = np.matrix(bands)
 #print ('bands:', bands)
 
+draw(bands, 'Set1', u'Matriz D das diagonais de A do sistema Ax=b,\nque será aplicada sucessivamente')
+
 choA = la.cholesky_banded(bands, lower=False)
 
 
-lines = []
-for linY in xrange(1, Ny+1):
-    for linX in xrange(1, Nx+1):
-        cols = []
-        for colY in xrange(1, Ny+1):
-            for colX in xrange(1, Nx+1):
-                val = 0.0
-                
-                if ((colX, colY) == (linX - 1, linY)):
-                    val = -p*dt*dy*dy
-                elif ((colX, colY) == (linX + 1, linY)):
-                    val = -p*dt*dy*dy
-                elif ((colX, colY) == (linX, linY - 1)):
-                    val = -p*dt*dx*dx
-                elif ((colX, colY) == (linX, linY + 1)):
-                    val = -p*dt*dx*dx
-                elif ((colX, colY) == (linX, linY)):
-                    val = 4*dx*dx*dy*dy + 2*p*dt*(dx*dx + dy*dy) - q*dt*dx*dy*(dx + dy)
-                                
-                cols.append(val)
-        lines.append(cols)
-matA = np.matrix(lines)
-
-print ('--'*32)
-print ('Matriz A do sistema Ax=b, que será aplicada sucessivamente')
-draw(matA, cm.coolwarm)
+#lines = []
+#for linY in xrange(1, Ny+1):
+#    for linX in xrange(1, Nx+1):
+#        cols = []
+#        for colY in xrange(1, Ny+1):
+#            for colX in xrange(1, Nx+1):
+#                val = 0.0
+#                
+#                if ((colX, colY) == (linX - 1, linY)):
+#                    val = -p*dt*dy*dy
+#                elif ((colX, colY) == (linX + 1, linY)):
+#                    val = -p*dt*dy*dy
+#                elif ((colX, colY) == (linX, linY - 1)):
+#                    val = -p*dt*dx*dx
+#                elif ((colX, colY) == (linX, linY + 1)):
+#                    val = -p*dt*dx*dx
+#                elif ((colX, colY) == (linX, linY)):
+#                    val = 4*dx*dx*dy*dy + 2*p*dt*(dx*dx + dy*dy) - q*dt*dx*dy*(dx + dy)
+#                                
+#                cols.append(val)
+#        lines.append(cols)
+#matA = np.matrix(lines)
+#
+#draw(matA, cm.coolwarm, u'Matriz A do sistema Ax=b, que será aplicada sucessivamente')
 
 
 #print (matA)
@@ -226,7 +226,7 @@ X,Y = np.meshgrid(x, y)
 
 def drawFrame(i):
     #print ('')
-    print ('i:',i)
+    #print ('i:',i)
     gridT = np.reshape(T[0], (Nx, Ny))
     #print ('gridT:', shape(gridT))
     #print (gridT)
