@@ -28,12 +28,11 @@ def tan_line(f,sf):
 
 
 
-print ('Fórmula em função de x, é possível usar as funções sen e cos')
-f = eval("lambda x:"+input("fn(x): "), {"sen": math.sin, "cos": math.cos})
-df = eval("lambda x:"+input("Df(x): "), {"sen": math.sin, "cos": math.cos})
-a = eval(input('Insira o ponto inicial x0:\na = '))
-N = eval(input('Insira o número de pontos\n:N = '))
-ev = eval(input('Insira a escala vertical:\nE = '))
+print ('Fórmula em função de x, é possível usar as funções sen, cos e exp')
+f = eval("lambda x:"+raw_input("fn(x): "), {"sen": math.sin, "cos": math.cos, "exp": np.exp})
+df = eval("lambda x:"+raw_input("Df(x): "), {"sen": math.sin, "cos": math.cos, "exp": np.exp})
+a = eval(raw_input('Insira o ponto inicial x0:\na = '))
+N = eval(raw_input('Insira o número de pontos:\nN = '))
 k = np.arange(0, N+1, 1)
 
 

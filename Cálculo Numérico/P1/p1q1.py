@@ -28,12 +28,13 @@ def tan_line(f,sf):
 
 
 
-print ('Fórmula em função de x, é possível usar as funções sen e cos')
-fntext = input("fn(x): ")
+print ('Fórmula em função de x, é possível usar as funções sen, cos e exp')
+fntext = raw_input("fn(x): ")
 print (fntext)
-f = eval("lambda x:"+fntext, {"sen": math.sin, "cos": math.cos})
-inter = np.float32(eval(input('Insira o intervalo da Função: ')))
+f = eval("lambda x:"+fntext, {"sen": math.sin, "cos": math.cos, "exp": np.exp})
+inter = np.float32(eval(raw_input('Insira o intervalo da Função: ')))
 print(inter)
+
 
 vf = np.vectorize(f)
 
@@ -69,6 +70,7 @@ def grafico(h, vtsaf,cor):
     plt.plot(X, vtsaf(X), cor, label = 'Derivada atrasada')
     plt.grid(True)
     plt.show()
+
 
 grafico(0.5, vtsaf1, '-b')
 grafico(0.2, vtsaf2, '-y')
