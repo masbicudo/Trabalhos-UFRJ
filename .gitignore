@@ -1,1 +1,6 @@
 *.uncommited/
+*.o
+*.so
+*.exe
+*.dll
+
