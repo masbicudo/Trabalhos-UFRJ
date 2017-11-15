@@ -4,3 +4,6 @@
 *.exe
 *.dll
 
+*.c.save
+prog
+gen

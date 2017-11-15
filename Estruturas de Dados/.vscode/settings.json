@@ -1,0 +1,11 @@
+{
+    "files.associations": {
+        "limits": "cpp",
+        "avl.hpp": "c",
+        "string.h": "c",
+        "libio.h": "c",
+        "stl_algobase.h": "c",
+        "base.h": "c",
+        "stdio2.h": "c"
+    }
+}
