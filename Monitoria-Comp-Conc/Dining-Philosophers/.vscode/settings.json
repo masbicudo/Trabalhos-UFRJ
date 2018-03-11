@@ -1,0 +1,10 @@
+{
+    "C_Cpp.intelliSenseEngine": "Default",
+    "files.associations": {
+        "stdio.h": "c",
+        "unistd.h": "c",
+        "pthread.h": "c",
+        "errno.h": "c",
+        "semaphore.h": "c"
+    }
+}
