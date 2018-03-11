@@ -9,6 +9,14 @@
 *                      Happy Coding
 ***********************************************************/
 
+// SOLUTION:
+// The philosophers will always get both chopsticks atomically.
+// In this processo the philosopher check whether adjacent ones
+// are feasting. If they are, he waits until he can feast.
+// A philosopher always asks to adjacent ones whether they
+// want to feast as soon as he finishes himself. If adjacent
+// philosopher is waiting, then he can feast finally.
+
 #include <stdio.h>
 #include <semaphore.h>
 #include <pthread.h>

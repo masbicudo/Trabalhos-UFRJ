@@ -13,19 +13,10 @@
 // The philosophers will always get the even chopstick first
 // and then get the odd one. This eliminates deadlocks
 // because no philosopher will ever wait for another
-// philosopher that is already waiting something.
+// philosopher that is already waiting for something.
 // When adjacent philosophers want a chopstick, they will
-// either be running to get their first chopstick, or for
-// their second chopstick.
-
-// PROBLEMS:
-// This uses module math because the table is circular.
-// The notion of even and odd disapear when the module is odd.
-// With 5 philosophers, the last philosopher thinks that
-// chopstick 6 is EVEN, but chopstick 6 is actually
-// chopstick 1 that is ODD (in modulo 5).
-//
-// The problem is that
+// either be running to get their first chopsticks, or for
+// their second chopsticks.
 
 #include <stdio.h>
 #include <semaphore.h>

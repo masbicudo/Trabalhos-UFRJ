@@ -9,6 +9,21 @@
 *                      Happy Coding
 ***********************************************************/
 
+// PROBLEM:
+// The philosophers will always get the left chopstick first
+// and then get the right one. To avoid the deadlock problem,
+// if the right chopstick is not available, the philosopher
+// drops the one that he got already.
+//
+// This works most of the time, but there is a problem.
+// If the philosophers somehow sincronize the access to
+// the chopsticks, so that one gets them and uses them
+// for 6 seconds, and the other one tries to get the
+// chopsticks in the middle of this 6 seconds, every 6
+// seconds, then the first will always be able to feast,
+// and the other one will always try to feast unsuccessfully
+// while the first one is feasting.
+
 #include <stdio.h>
 #include <semaphore.h>
 #include <pthread.h>

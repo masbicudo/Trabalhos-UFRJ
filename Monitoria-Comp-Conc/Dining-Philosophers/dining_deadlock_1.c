@@ -9,6 +9,12 @@
 *                      Happy Coding
 ***********************************************************/
 
+// PROBLEM:
+// The philosophers will always get the left chopstick first
+// and then get the right one. If all of them get their
+// respective left at the same time, then they will wait forever
+// for the right one.
+
 #include <stdio.h>
 #include <semaphore.h>
 #include <pthread.h>
