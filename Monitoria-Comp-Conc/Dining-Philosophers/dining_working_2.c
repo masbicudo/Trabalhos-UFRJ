@@ -55,6 +55,8 @@ int phil_num[N];
 
 int main()
 {
+    printf("Dining Philosophers: working example 2\n");
+
     int i, retval;
     pthread_t thread_id[N];
 

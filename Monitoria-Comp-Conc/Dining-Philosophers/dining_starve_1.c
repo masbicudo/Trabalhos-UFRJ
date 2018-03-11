@@ -15,14 +15,20 @@
 // if the right chopstick is not available, the philosopher
 // drops the one that he got already.
 //
-// This works most of the time, but there is a problem.
+// This code works when philosophers have out-of-synchrony timings,
+// but there is a problem when timings align.
 // If the philosophers somehow sincronize the access to
 // the chopsticks, so that one gets them and uses them
 // for 6 seconds, and the other one tries to get the
 // chopsticks in the middle of this 6 seconds, every 6
-// seconds, then the first will always be able to feast,
+// seconds after that, then the first will always be able to feast,
 // and the other one will always try to feast unsuccessfully
 // while the first one is feasting.
+// 
+// Hint: To see why this happens in this code,
+// count the number of seconds that a successful
+// attempt to feast takes, and then count the
+// number of seconds that an unsuccessful attempt takes.
 
 #include <stdio.h>
 #include <semaphore.h>
@@ -50,6 +56,8 @@ void put_fork(int);
 
 int main()
 {
+    printf("Dining Philosophers: starving example 1\n");
+
     int phil_num[N];
     int i;
     pthread_t thread_id[N]; // each thread will simulate the behavior of one philosopher

@@ -3,6 +3,16 @@ Dining Philosophers
 
 Exemplos de códigos que funcionam e que não funcionam para resolver esse problema.
 
+A forma mais fácil de rodar os exemplos é usando alguma plataforma online como:
+- **[repl.it](https://repl.it):** basta copiar o código do exemplo e colar no site, em um arquivo `cpp`. Neste site, o `c` não oferece acesso à biblioteca pthread, que é necessária, mas o `cpp` oferece acesso.
+
+    Os exemplos desse projeto podem ser acessador nesses links:
+
+    - https://repl.it/@masbicudo/diningdeadlock1
+    - https://repl.it/@masbicudo/diningstarve1
+    - https://repl.it/@masbicudo/diningworking1
+    - https://repl.it/@masbicudo/diningworking2
+
 WSL (Windows Subsystems for Linux)
 ==================================
 
