@@ -16,13 +16,19 @@ Questão
 
 Como criar uma disciplina entre os filósofos de tal forma que qualquer um deles possa, eventualmente, comer ao ficar com fome?
 
+A resposta requer que os filósofos sejam capazes de se organizar usando alguma forma de [exclusão mútua](https://en.wikipedia.org/wiki/Mutual_exclusion),
+pois mais de um filósofo não pode pegar o mesmo talher.
+
 Rodando os exemplos
 ===================
 
 A forma mais fácil de rodar os exemplos é usando alguma plataforma online como:
-- **[repl.it](https://repl.it):** basta copiar o código do exemplo e colar no site, em um arquivo `cpp`. Neste site, o `c` não oferece acesso à biblioteca pthread, que é necessária, mas o `cpp` oferece acesso.
 
-- **[Coding Ground](https://www.tutorialspoint.com/codingground.htm):** é uma ferramenta avançada que permite a criação de projetos online. A interface é bem simples e direta ao ponto. Permite editar o comando de compilação, o que facilita incluir bibliotecas como a pthread.
+- **[Coding Ground](https://www.tutorialspoint.com/codingground.htm):** é uma ferramenta avançada que permite a criação de projetos online. A interface é bem simples e direta ao ponto. Permite editar o comando de compilação, o que facilita incluir bibliotecas como a pthread. O shell é totalmente interativo, permitindo dar entrada para o programa assim como ver a saída durante a execução.
+
+- **[repl.it](https://repl.it):** basta copiar o código do exemplo e colar no site, em um arquivo `cpp`. Neste site, o `c` não oferece acesso à biblioteca pthread, que é necessária, mas o `cpp` oferece acesso. A ferramente é semi-interativa, pois toda a entrada tem que ser predefinida. Entretanto, a saída é mostrada durante a execução do programa, o que para este caso é o suficiente.
+
+- **[Rextester](http://rextester.com/main):** ferramenta de codificação colaborativa, dá pra ver o cursor de todos que estiverem editando ao mesmo tempo. Infelizmente a ferramente não é interativa, ou seja, a entrada e saída do programa não aparecem durante a execução. Toda a entrada tem que ser predefinida, e toda a saída é dada de uma única vez ao término do programa.
 
 WSL (Windows Subsystems for Linux)
 ==================================
