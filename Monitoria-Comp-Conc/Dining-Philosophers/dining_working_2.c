@@ -16,6 +16,21 @@
 // A philosopher always asks to adjacent ones whether they
 // want to feast as soon as he finishes himself. If adjacent
 // philosopher is waiting, then he can feast finally.
+//
+// PROBLEM:
+// This solution overcomes a starvation problem by making
+// philosophers hint adjacent ones when he finishes feasting.
+// This allows hungry adjacent philosophers to take action
+// immediately. However, this is a partial solution for the
+// starvation problem.
+// We will name 3 of the philosophers as A, B and C.
+// If it is the case that A or C is always feasting,
+// then philosophers B can never feast.
+// Possible timeline:
+//  A: fffffffff        fffffffffffffff        fffffffffffff...
+//  B:    wwwwww!wwwwwwwwwww!wwwwwwwwww!wwwwwwwwwww!wwwwwwww...
+//  C:       fffffffffffffff        fffffffffffffff        f...
+//  Legend: f = feasting; w = waiting; ! = poked by adjacent
 
 #include <stdio.h>
 #include <semaphore.h>
@@ -32,7 +47,7 @@
 #define LEFT ((ph_num + N - 1) % N)
 #define RIGHT ((ph_num + 1) % N)
 
-sem_t mutex;
+sem_t stone_mutex;
 sem_t can_eat[N];
 
 extern int errno;
@@ -60,7 +75,7 @@ int main()
     int i, retval;
     pthread_t thread_id[N];
 
-    sem_init(&mutex, 0, 1); // initialize locking object
+    sem_init(&stone_mutex, 0, 1); // initialize locking object
 
     // initialize "can eat" signaling objects
     for (i = 0; i < N; i++)
@@ -72,7 +87,7 @@ int main()
         pthread_create(&thread_id[i], NULL, philospher, &phil_num[i]);
     }
     for (i = 0; i < N; i++)
-        pthread_join(thread_id[i], NULL);
+        pthread_join(thread_id[i], NULL); // waits forever
 }
 
 void *philospher(void *num)
@@ -91,36 +106,46 @@ void *philospher(void *num)
 
 void take_chopstick(int ph_num)
 {
-    sem_wait(&mutex);
+    sem_wait(&stone_mutex); //  wait to get "stone" (lock for "stone")
     {
         state[ph_num] = HUNGRY;
         printf("Philosopher %d is Hungry\n", ph_num + 1);
-        set_permition_to_eat_if_needed(ph_num);
-        // philosopher may or may not be allowed to eat
-    }
-    sem_post(&mutex);
+        set_permition_to_eat_if_needed(ph_num);  
+        // philosopher may or may not be allowed to eat!
+    } 
+    sem_post(&stone_mutex);  // returns "stone" to the center of the table
+    					// (unlock "stone")
 
     sem_wait(&can_eat[ph_num]); // wait until philosopher can eat
+    // will wait until either 
+    // 1) he himself has given him permission to eat or 
+    // 2) one of his neighbors gives him that permission
 
     sleep(1);
 }
-
 void set_permition_to_eat_if_needed(int ph_num)
 {
-    if (state[ph_num] == HUNGRY && state[LEFT] != EATING && state[RIGHT] != EATING)
+    if (state[ph_num] == HUNGRY && state[LEFT] != EATING && 
+    	state[RIGHT] != EATING)
     {
-        state[ph_num] = EATING;
-        printf("Philosopher %d takes chopstick %d and %d\n", ph_num + 1, LEFT + 1, RIGHT + 1);
+        printf("Philosopher %d takes chopstick %d and %d\n", 
+        	ph_num + 1, LEFT + 1, RIGHT + 1);
         sem_post(&can_eat[ph_num]); // philosopher is allowed to eat
+        // [philosopher may be "allowing himself" to eat :)]
+        // note that this semaphore has the semantics of a "message" 
+        state[ph_num] = EATING;
+
     }
 }
-
 void put_chopstick(int ph_num)
 {
-    sem_wait(&mutex);
+    sem_wait(&stone_mutex); // get "stone"
+    	// (philosophers can only change global state if they 
+    	// have the stone!)
     {
         state[ph_num] = THINKING;
-        printf("Philosopher %d putting chopstick %d and %d down\n", ph_num + 1, LEFT + 1, RIGHT + 1);
+        printf("Philosopher %d putting chopstick %d and %d down\n", 
+        	ph_num + 1, LEFT + 1, RIGHT + 1);
         printf("Philosopher %d is thinking\n", ph_num + 1);
 
         // asking whether left philosopher wishes to eat
@@ -129,5 +154,20 @@ void put_chopstick(int ph_num)
         // asking whether right philosopher wishes to eat
         set_permition_to_eat_if_needed(RIGHT);
     }
-    sem_post(&mutex);
+    sem_post(&stone_mutex); // return "stone"
+    // (philosophers can only change global state if they have the stone!)
 }
+
+// TODOs:
+//
+// 1)   break set_permition_to_eat_if_needed into 
+//      set_permition_to_myself_to_eat and
+//      set_permition_to_neighbor_to_eat_if_needed
+//
+// 2)   reproduce the synchronization problem which will not allow a
+//      given philosopher to eat (forever!) -- this break the fairness
+//      property of starvation-freedom
+//      (to simplify, consider the case of 3 philosophers)
+//
+// 3)   challenge: fix the code to prevent the problem above
+//
