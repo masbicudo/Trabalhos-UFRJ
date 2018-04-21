@@ -1,13 +1,24 @@
 /***********************************************************
-* You can use all the programs on  www.c-program-example.com
-* for personal and learning purposes. For permissions to use the
-* programs for commercial purposes,
-* contact info@c-program-example.com
-* To find more C programs, do visit www.c-program-example.com
-* and browse!
-* 
-*                      Happy Coding
-***********************************************************/
+ * == DERIVATIVE WORK LICENSE ==
+ * This code is a modified version of the one found at
+ * www.c-program-example.com. This code is subject to the
+ * original license as stated below. As for the changes that
+ * I did, you can use it however you wish, as long as you
+ * don't hold me liable. This means that if
+ * the original author gives permission for you to use his
+ * code in some way, then you can also use this derivative
+ * work the same way.
+ *
+ * == UNDERLYING WORK LICENSE ==
+ * You can use all the programs on  www.c-program-example.com
+ * for personal and learning purposes. For permissions to use the
+ * programs for commercial purposes,
+ * contact info@c-program-example.com
+ * To find more C programs, do visit www.c-program-example.com
+ * and browse!
+ * 
+ *                      Happy Coding
+ ***********************************************************/
 
 // PROBLEM:
 // The philosophers will always get the left chopstick first
