@@ -10,6 +10,7 @@ public class Leader extends Prisoner {
         if (this.room.isTriggerSet())
         {
             this.count--;
+            System.out.println("Leader turns trigger off, and counts " + this.count + " prisoners remaining.");
             if (this.count == 0)
                 this.warden.requestFreedom();
             this.room.clearTrigger();

@@ -9,7 +9,7 @@ public class Warden extends Thread {
 
     public Warden(Room room, Prisoner[] prisoners){
         this.room = room;
-        this.count = prisoners.length;
+        this.count = 0;
         this.prisoners = prisoners;
         this.eachCount = new int[prisoners.length];
     }
@@ -47,16 +47,17 @@ public class Warden extends Thread {
                 // They want to get free...
                 // let's check whether they won the game
                 for (int it = 0; it < this.prisoners.length; it++) {
-                    if (this.count == 0)
+                    if (this.count == this.prisoners.length)
                         this.prisoners[it].free();
                     else
                         this.prisoners[it].kill();
                 }
+                break;
             }
         }
     }
 
-    public synchronized void requestFreedom() {
+    public void requestFreedom() {
         this.freedomRequested = true;
     }
 

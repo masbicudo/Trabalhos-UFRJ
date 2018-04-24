@@ -1,5 +1,5 @@
 public class Main {
-    private static final int numPrisoners = 10;
+    private static final int numPrisoners = 5;
 
     public static void main(String[] args) throws Exception {
         Prisoner[] prisoners = new Prisoner[numPrisoners];

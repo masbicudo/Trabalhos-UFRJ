@@ -35,7 +35,7 @@ public class Prisoner extends Thread {
                 this.wait();
 
             // I got out of the cell...
-            // am I free or dead? or should I go to the room
+            // am I free or dead? or should I go to the room?
             if (this.state != IN_ROOM)
                 break;
 
@@ -59,6 +59,7 @@ public class Prisoner extends Thread {
         // If I didn't switch the trigger on yet, then do it
         if (this.count < 1 && !this.room.isTriggerSet())
         {
+            System.out.println("Prisoner " + this.id + " turns trigger on!");
             this.count++;
             this.room.setTrigger();
         }
