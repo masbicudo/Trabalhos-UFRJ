@@ -24,7 +24,7 @@ int cmp(int a0, int a1, int b0, int b1);
 
 int main()
 {
-    printf("Testing Peterson mutual exclusion algorithm\n");
+    printf("Testing Lamport's bakery mutual exclusion algorithm\n");
 
     pthread_t thread_id[NUM_THREADS]; // each thread will simulate the behavior of one philosopher
 

@@ -48,9 +48,8 @@ void *thread0(void *num)
     while (1)
     {
         #ifdef LOCK_ENABLED
-        flag[0] = true;
         turn = 1;
-        while (flag[1] == true && turn == 1)
+        while (turn == 1)
             sleep(0);
         #endif
 
@@ -75,9 +74,8 @@ void *thread1(void *num)
     while (1)
     {
         #ifdef LOCK_ENABLED
-        flag[1] = true;
         turn = 0;
-        while (flag[0] == true && turn == 0)
+        while (turn == 0)
             sleep(0);
         #endif
 

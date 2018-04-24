@@ -7,7 +7,7 @@
 #include <unistd.h>
 
 #define LOCK_ENABLED
-#define ENABLE_THREAD_0
+//#define ENABLE_THREAD_0
 #define ENABLE_THREAD_1
 
 bool flag[2] = {false, false};
@@ -49,8 +49,7 @@ void *thread0(void *num)
     {
         #ifdef LOCK_ENABLED
         flag[0] = true;
-        turn = 1;
-        while (flag[1] == true && turn == 1)
+        while (flag[1] == true)
             sleep(0);
         #endif
 
@@ -76,8 +75,7 @@ void *thread1(void *num)
     {
         #ifdef LOCK_ENABLED
         flag[1] = true;
-        turn = 0;
-        while (flag[0] == true && turn == 0)
+        while (flag[0] == true)
             sleep(0);
         #endif
 
