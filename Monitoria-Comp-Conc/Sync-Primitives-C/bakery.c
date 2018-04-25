@@ -13,20 +13,15 @@
 
 #define LOCK_ENABLED
 
-#define ENABLE_THREAD_0
-#define ENABLE_THREAD_1
-
-//#define YIELD_WAIT
-
-volatile bool Entering[NUM_THREADS];
-volatile int Number[NUM_THREADS];
+bool Entering[NUM_THREADS];
+int Number[NUM_THREADS];
 
 int resource = 0;
 
 void *thread(void *num);
 void lock(int i);
 void unlock(int i);
-int max(volatile int* items, int count);
+int max(int* items, int count);
 int cmp(int a0, int a1, int b0, int b1);
 void wait();
 
@@ -85,7 +80,7 @@ void unlock(int i) {
     Number[i] = 0;
 }
 
-int max(volatile int* items, int count) {
+int max(int* items, int count) {
     int max_value = items[0];
     for (int it = 1; it < count; it++) {
         if (items[it] > max_value)
