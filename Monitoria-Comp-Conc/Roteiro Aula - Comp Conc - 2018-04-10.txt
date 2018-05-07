@@ -1,0 +1,32 @@
+Roteiro Aula 10-04-2018
+
+1) Apresentar novamente o Jantar dos Filósofos
+
+    - falar sobre restrição de que filósofos não podem segurar o mesmo garfo
+
+        Não é pressuposto que dois filósofos não possam segurar o mesmo talher,
+        apesar de óbvio, é algo que faz parte da solução do problema.
+
+    - apresentar as propriedades do slide que o Daniel passou
+    
+        Na apresentação que o Daniel achou tem uma lista de várias propriedades.
+        ( http://scg.unibe.ch/download/cp/05LivenessGuardedMethods.pdf )
+        slide 18 - discutir com os alunos essas propriedades
+    
+2) discutir mais com os alunos sobre liveness e safety
+
+      Apontar o caso do deadlock que pode ser expresso como safety e liveness
+      - Safety: evitar um estado alcançável em tempo finito chamado "DEADLOCK"
+      - Liveness: se eu ficar esperando num LOCK, eventualmente vou prosseguir, portanto não há DEADLOCK
+
+3) roteiros de soluções criadas pelos alunos para o Jantar dos Filósofos
+
+    - perguntar se alguém fez o roteiro
+        - pedir para os alunos que fizeram o roteiro para explicar o que dá certo ou errado nos seus roteiros
+        - tentar achar erros de forma interativa
+    - apresentar os métodos em C para implementar um roteiro
+    - mostrar de forma interativa com a turma como seria a implementação de um roteiro
+        - pode ser o de algum dos alunos
+        - ou pode ser um prédefindo (no outro slide tem um monte de soluções)
+            ( lecture4.pdf )
+
