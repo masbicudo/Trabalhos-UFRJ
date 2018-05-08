@@ -1,5 +1,5 @@
 public class Main {
-    private static int numPrisoners = 5;
+    private static int numPrisoners = 20;
 
     public static void main(String[] args) throws Exception {
         if (args.length >= 1)

@@ -28,15 +28,25 @@ public class Prisoner extends Thread {
     synchronized void live() throws InterruptedException {
         while (true) {
             // go back to the cell
+            // notify warden that inmate is in cell
             // stay there until asked to go to the room
             //      or until set free
             // go to the room when asked
             // do something in the room
             // get out of the room
+
             this.state = IN_CELL;
+            System.out.println("Prisoner: "+this.id+" in cell");
+
+            // this.warden.notifyPrisonerInCell() // this caused dead lock...
+            //              one object shouldn't wait for state of another object
+            //              that's why we need to use waitUntilInCell() instead
+            // indicate that state changed... allowing waitUntilInCell() to proceed
+            this.notifyAll();
+
             System.out.println("Prisoner: "+this.id+" wait in cell");
             while (this.state == IN_CELL)
-                this.wait();
+                this.wait(); // waitUntilInCell() will proceed on this line of code
 
             // I got out of the cell...
             // am I free or dead? or should I go to the room?
@@ -86,5 +96,16 @@ public class Prisoner extends Thread {
         System.out.println("Prisoner: " + this.id + " going to room.");
         this.state = IN_ROOM;
         this.notifyAll();
+    }
+
+    public synchronized void waitUntilInCell() {
+        try {
+
+            while (this.state != Prisoner.IN_CELL)
+                this.wait();
+
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 }
