@@ -42,7 +42,11 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.opencv.android.BaseLoaderCallback;
+import org.opencv.android.LoaderCallbackInterface;
+import org.opencv.android.OpenCVLoader;
 import org.opencv.android.Utils;
+import org.opencv.core.Core;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
 import org.opencv.core.Rect;
@@ -92,6 +96,37 @@ public class AndroidCameraApi extends AppCompatActivity {
     private int frames = 0;
     private Image image = null;
     private android.graphics.Rect zoom = null;
+    private boolean mOpenCvLoaded = false;
+
+    static {
+        if (!OpenCVLoader.initDebug()) {
+            Log.e("TEST", "Cannot connect to OpenCV Manager");
+        }
+    }
+
+    private BaseLoaderCallback mLoaderCallback = new BaseLoaderCallback(this) {
+        @Override
+        public void onManagerConnected(int status) {
+            switch (status) {
+                case LoaderCallbackInterface.SUCCESS:
+                {
+                    Log.i(TAG, "OpenCV loaded successfully");
+                    mOpenCvLoaded = true;
+
+                    try {
+                        setupKnn();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+
+                    }
+                } break;
+                default:
+                {
+                    super.onManagerConnected(status);
+                } break;
+            }
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -103,11 +138,6 @@ public class AndroidCameraApi extends AppCompatActivity {
         tv = (TextView) findViewById(R.id.txt_tv);
         iv = (ImageView) findViewById(R.id.img_iv);
         assetManager = getAssets();
-        //try {
-        //    setupKnn();
-        //} catch (IOException e) {
-        //    e.printStackTrace();
-        //}
     }
 
     private void setupKnn() throws IOException {
@@ -128,10 +158,17 @@ public class AndroidCameraApi extends AppCompatActivity {
             for (int c=0; c<100; c++) {
                 // crop out 1 digit:
                 Mat instance = digits.submat(new Rect(c*20,r*20,20,20));
+                List<Mat> rgb = new ArrayList<Mat>(3);
+                Core.split(instance, rgb);
+                Mat mR = rgb.get(0);
+                Mat mG = rgb.get(1);
+                Mat mB = rgb.get(2);
+
                 // we need float data for knn:
-                instance.convertTo(instance, CvType.CV_32F);
+                mR.convertTo(mR, CvType.CV_32F);
                 // for opencv ml, each instance has to be a single row:
-                trainData.push_back(instance.reshape(1,1));
+                mR = mR.reshape(1,1);
+                trainData.push_back(mR);
                 // add a label for that item (the digit number):
                 trainLabs.add(r/5);
             }
@@ -362,6 +399,7 @@ public class AndroidCameraApi extends AppCompatActivity {
                     //final Bitmap bitmap1 = Bitmap.createBitmap(data.cols(), data.rows(), Bitmap.Config.ARGB_8888);
                     //Utils.matToBitmap(data, bitmap1);
 
+                    // Creating 20x20 gray scale bitmap to send to the KNN classifier
                     final byte[] argbBytes = new byte[bytes.length * 4];
                     for(int i = 0; i < bytes.length; i++) {
                         int y = i % w;
@@ -376,20 +414,36 @@ public class AndroidCameraApi extends AppCompatActivity {
                     final Bitmap bitmap1 = Bitmap.createBitmap(h, w, Bitmap.Config.ARGB_8888);
                     bitmap1.copyPixelsFromBuffer(ByteBuffer.wrap(argbBytes));
                     final Bitmap bitmap2 = Bitmap.createScaledBitmap(
-                            Bitmap.createScaledBitmap(
-                                    cropCenterSquare(bitmap1),
-                                    20,
-                                    20,
-                                    false),
+                            cropCenterSquare(bitmap1),
+                            20,
+                            20,
+                            false);
+                    final Bitmap bitmap3 = Bitmap.createScaledBitmap(
+                            bitmap2,
                             500,
                             500,
                             false);
 
+                    Mat gs = new Mat();
+                    Utils.bitmapToMat(bitmap2, gs);
+                    List<Mat> argb = new ArrayList<Mat>(4);
+                    Core.split(gs, argb);
+                    gs = argb.get(0);
+                    // we need float data for knn:
+                    gs.convertTo(gs, CvType.CV_32F);
+                    // for opencv ml, each instance has to be a single row:
+                    gs = gs.reshape(1,1);
+                    Mat res = new Mat();
+                    final float p = knn.findNearest(gs, 1, res);
+
+                    // Show info
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            iv.setImageBitmap(bitmap2);
-                            tv.setText("f: " + frames + "\n"
+                            iv.setImageBitmap(bitmap3);
+                            tv.setText(""
+                                    + "class: " + p + "\n"
+                                    + "f: " + frames + "\n"
                                     + "sz: " + w + "x" + h + "=" + h*w + "\n"
                                     + "len: " + bytes.length + "\n"
                                     + "o: " + getResources().getConfiguration().orientation
@@ -530,6 +584,8 @@ public class AndroidCameraApi extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
+
+        OpenCVLoader.initAsync(OpenCVLoader.OPENCV_VERSION_2_4_6, this, mLoaderCallback);
 
         if (BuildConfig.DEBUG) { // don't even consider it otherwise
             if (Debug.isDebuggerConnected()) {
