@@ -2,8 +2,10 @@ package com.masbicudo.android_test_app;
 
 import android.Manifest;
 import android.content.Context;
+import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.content.res.AssetManager;
+import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.ImageFormat;
@@ -21,6 +23,7 @@ import android.hardware.camera2.params.StreamConfigurationMap;
 import android.media.Image;
 import android.media.ImageReader;
 import android.os.Bundle;
+import android.os.Debug;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.HandlerThread;
@@ -33,6 +36,7 @@ import android.util.SparseIntArray;
 import android.view.Surface;
 import android.view.TextureView;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -87,6 +91,8 @@ public class AndroidCameraApi extends AppCompatActivity {
     private AssetManager assetManager;
     private int frames = 0;
     private Image image = null;
+    private android.graphics.Rect zoom = null;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -314,6 +320,7 @@ public class AndroidCameraApi extends AppCompatActivity {
                         image.close();
                         return;
                     }
+                    processing = true;
 
                     frames++;
 
@@ -322,9 +329,8 @@ public class AndroidCameraApi extends AppCompatActivity {
                     //https://www.learnopencv.com/handwritten-digits-classification-an-opencv-c-python-tutorial/
                     //https://www.learnopencv.com/histogram-of-oriented-gradients/
 
-                    processing = true;
-                    int w = image.getWidth();
-                    int h = image.getHeight();
+                    final int w = image.getWidth();
+                    final int h = image.getHeight();
                     Image.Plane[] planes = image.getPlanes();
 //                    ByteBuffer Ybuffer = planes[0].getBuffer();
 //                    ByteBuffer Ubuffer = planes[1].getBuffer();
@@ -340,7 +346,7 @@ public class AndroidCameraApi extends AppCompatActivity {
 //                    Vbuffer.get(V);
 
                     final ByteBuffer buffer = planes[0].getBuffer();
-                    byte[] bytes = new byte[buffer.remaining()];
+                    final byte[] bytes = new byte[buffer.remaining()];
                     buffer.get(bytes, 0, bytes.length);
 
 
@@ -355,11 +361,39 @@ public class AndroidCameraApi extends AppCompatActivity {
                     //final Bitmap bitmap1 = BitmapFactory.decodeByteArray(Y, 0, Y.length, null);
                     //final Bitmap bitmap1 = Bitmap.createBitmap(data.cols(), data.rows(), Bitmap.Config.ARGB_8888);
                     //Utils.matToBitmap(data, bitmap1);
+
+                    final byte[] argbBytes = new byte[bytes.length * 4];
+                    for(int i = 0; i < bytes.length; i++) {
+                        int y = i % w;
+                        int x = h - i / w - 1;
+                        int j = y * h + x;
+                        argbBytes[j*4 + 0] = bytes[i];
+                        argbBytes[j*4 + 1] = bytes[i];
+                        argbBytes[j*4 + 2] = bytes[i];
+                        argbBytes[j*4 + 3] = (byte)255;
+                    }
+
+                    final Bitmap bitmap1 = Bitmap.createBitmap(h, w, Bitmap.Config.ARGB_8888);
+                    bitmap1.copyPixelsFromBuffer(ByteBuffer.wrap(argbBytes));
+                    final Bitmap bitmap2 = Bitmap.createScaledBitmap(
+                            Bitmap.createScaledBitmap(
+                                    cropCenterSquare(bitmap1),
+                                    20,
+                                    20,
+                                    false),
+                            500,
+                            500,
+                            false);
+
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            //iv.setImageBitmap(bitmap1);
-                            tv.setText("X: " + frames);
+                            iv.setImageBitmap(bitmap2);
+                            tv.setText("f: " + frames + "\n"
+                                    + "sz: " + w + "x" + h + "=" + h*w + "\n"
+                                    + "len: " + bytes.length + "\n"
+                                    + "o: " + getResources().getConfiguration().orientation
+                            );
                             processing = false;
                         }
                     });
@@ -374,6 +408,27 @@ public class AndroidCameraApi extends AppCompatActivity {
         reader.setOnImageAvailableListener(readerListener, mBackgroundHandler);
         return reader;
     }
+
+    private static Bitmap cropCenterSquare(Bitmap srcBmp) {
+        if (srcBmp.getWidth() >= srcBmp.getHeight()){
+            return Bitmap.createBitmap(
+                    srcBmp,
+                    srcBmp.getWidth()/2 - srcBmp.getHeight()/2,
+                    0,
+                    srcBmp.getHeight(),
+                    srcBmp.getHeight()
+            );
+        }else{
+            return Bitmap.createBitmap(
+                    srcBmp,
+                    0,
+                    srcBmp.getHeight()/2 - srcBmp.getWidth()/2,
+                    srcBmp.getWidth(),
+                    srcBmp.getWidth()
+            );
+        }
+    }
+
     protected void createCameraPreview() {
         try {
             // Activity widget surface: to display the camera image in the screen
@@ -382,6 +437,7 @@ public class AndroidCameraApi extends AppCompatActivity {
             texture.setDefaultBufferSize(imageDimension.getWidth(), imageDimension.getHeight());
             Surface surface = new Surface(texture);
             captureRequestBuilder = cameraDevice.createCaptureRequest(CameraDevice.TEMPLATE_PREVIEW);
+            captureRequestBuilder.set(CaptureRequest.SCALER_CROP_REGION, zoom);
             captureRequestBuilder.addTarget(surface);
 
             // Classifier surface: to allow the classifier to do it's work with the image from the camera
@@ -425,6 +481,15 @@ public class AndroidCameraApi extends AppCompatActivity {
                 ActivityCompat.requestPermissions(AndroidCameraApi.this, new String[]{Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQUEST_CAMERA_PERMISSION);
                 return;
             }
+
+            android.graphics.Rect rect = characteristics.get(CameraCharacteristics.SENSOR_INFO_ACTIVE_ARRAY_SIZE);
+            float zoomLevel = 4;
+            float ratio = (float) 1 / zoomLevel;
+            int croppedWidth = rect.width() - Math.round((float)rect.width() * ratio);
+            int croppedHeight = rect.height() - Math.round((float)rect.height() * ratio);
+            zoom = new android.graphics.Rect(croppedWidth/2, croppedHeight/2,
+                    rect.width() - croppedWidth/2, rect.height() - croppedHeight/2);
+
             manager.openCamera(cameraId, stateCallback, null);
         } catch (CameraAccessException e) {
             e.printStackTrace();
@@ -465,6 +530,17 @@ public class AndroidCameraApi extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
+
+        if (BuildConfig.DEBUG) { // don't even consider it otherwise
+            if (Debug.isDebuggerConnected()) {
+                Log.d("SCREEN", "Keeping screen on for debugging, detach debugger and force an onResume to turn it off.");
+                getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+            } else {
+                getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+                Log.d("SCREEN", "Keeping screen on for debugging is now deactivated.");
+            }
+        }
+
         Log.e(TAG, "onResume");
         startBackgroundThread();
         if (textureView.isAvailable()) {
@@ -479,5 +555,11 @@ public class AndroidCameraApi extends AppCompatActivity {
         //closeCamera();
         stopBackgroundThread();
         super.onPause();
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
     }
 }

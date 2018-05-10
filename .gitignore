@@ -85,3 +85,4 @@ reclamacoes-fundamentadas-sindec-*.csv
 .idea/
 .vscode/
 *.log
+build/
