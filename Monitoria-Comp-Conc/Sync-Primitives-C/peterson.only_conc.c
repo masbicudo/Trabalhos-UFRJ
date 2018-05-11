@@ -10,7 +10,6 @@
 #define ENABLE_THREAD_0
 #define ENABLE_THREAD_1
 
-bool flag[2] = {false, false};
 int turn;
 
 int resource = 0;
@@ -63,7 +62,6 @@ void *thread0(void *num)
         // end of critical section
 
         #ifdef LOCK_ENABLED
-        flag[0] = false;
         #endif
     }
 }
@@ -89,7 +87,6 @@ void *thread1(void *num)
         // end of critical section
 
         #ifdef LOCK_ENABLED
-        flag[1] = false;
         #endif
     }
 }
