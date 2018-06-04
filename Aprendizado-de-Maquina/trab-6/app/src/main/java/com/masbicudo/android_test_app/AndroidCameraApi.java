@@ -9,7 +9,6 @@ import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.ImageFormat;
-import android.graphics.PixelFormat;
 import android.graphics.SurfaceTexture;
 import android.hardware.camera2.CameraAccessException;
 import android.hardware.camera2.CameraCaptureSession;
@@ -35,9 +34,7 @@ import android.util.Size;
 import android.util.SparseIntArray;
 import android.view.Surface;
 import android.view.TextureView;
-import android.view.View;
 import android.view.WindowManager;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -51,12 +48,8 @@ import org.opencv.core.CvType;
 import org.opencv.core.Mat;
 import org.opencv.core.Rect;
 import org.opencv.core.TermCriteria;
-import org.opencv.imgcodecs.Imgcodecs;
-import org.opencv.imgproc.Imgproc;
 import org.opencv.ml.ANN_MLP;
-import org.opencv.ml.KNearest;
 import org.opencv.ml.Ml;
-import org.opencv.utils.Converters;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -70,8 +63,15 @@ import java.util.Arrays;
 import java.util.List;
 public class AndroidCameraApi extends AppCompatActivity {
     private static final String TAG = "AndroidCameraApi";
+
+    private static  final boolean HOG_ORIENTED = true;
+    private static final int HIST_BUCKETS = 18;
+    private static final int HIST_MAX_SEARCH_RANGE = 3;
+    private static final boolean USE_IMAGE_BITS = false;
+
     private TextView tv;
     private ImageView iv;
+    private ImageView iv_hist;
     private TextureView textureView;
     private static final SparseIntArray ORIENTATIONS = new SparseIntArray();
     static {
@@ -140,6 +140,7 @@ public class AndroidCameraApi extends AppCompatActivity {
         textureView.setSurfaceTextureListener(textureListener);
         tv = (TextView) findViewById(R.id.txt_tv);
         iv = (ImageView) findViewById(R.id.img_iv);
+        iv_hist = (ImageView) findViewById(R.id.img_hist);
         assetManager = getAssets();
     }
 
@@ -148,6 +149,17 @@ public class AndroidCameraApi extends AppCompatActivity {
         // References:
         // http://answers.opencv.org/question/89927/how-to-use-knearest-in-java/
         // http://www.magicandlove.com/blog/2016/08/03/artificial-neural-network-in-opencv-with-processing/
+
+        String filename = "ann001.xml";
+
+        if (ann != null && ann.isTrained())
+            return;
+
+        File file = new File(getCacheDir(), filename);
+        if(file.exists()) {
+            ann = ANN_MLP.load(file.getAbsolutePath());
+            return;
+        }
 
         InputStream is = assetManager.open("digits.png");
         Bitmap bitmap = BitmapFactory.decodeStream(is);
@@ -168,12 +180,21 @@ public class AndroidCameraApi extends AppCompatActivity {
                 Mat mG = rgb.get(1);
                 Mat mB = rgb.get(2);
 
-                // we need float data for knn:
+                // we need float data for nn:
                 mR.convertTo(mR, CvType.CV_32F);
                 // for opencv ml, each instance has to be a single row:
                 mR = mR.reshape(1,1);
 
-                Mat features = extractFeatures(mR);
+                int[] k_ref = new int[6];
+                Mat hog = extractHoG(mR, k_ref);
+                Mat features;
+                if (USE_IMAGE_BITS) {
+                    features = new Mat();
+                    Core.hconcat(Arrays.asList(hog, mR), features);
+                }
+                else {
+                    features = hog;
+                }
 
                 trainData.push_back(features);
                 // add a label for that item (the digit number):
@@ -182,56 +203,126 @@ public class AndroidCameraApi extends AppCompatActivity {
         }
 
         ann = ANN_MLP.create();
-        TermCriteria criteria = new TermCriteria(TermCriteria.EPS + TermCriteria.MAX_ITER,100,0.1);
-        ann.setTermCriteria(criteria);
-        ann.train(trainData, Ml.ROW_SAMPLE,Converters.vector_int_to_Mat(trainLabs));
+        ann.setTermCriteria(new TermCriteria(TermCriteria.EPS + TermCriteria.MAX_ITER,10000,0.01));
+        ann.setTrainMethod(ANN_MLP.BACKPROP);
+        ann.setBackpropWeightScale(0.05f);
+        ann.setBackpropMomentumScale(0.05f);
+        Mat layers = new Mat(3, 1, CvType.CV_32SC1);
+        int input_sz = (int)trainData.size().width;
+        layers.put(0, 0, new int[] { input_sz, (input_sz+10)/2, 10 });
+        //printMat(layers);
+        ann.setLayerSizes(layers);
+        ann.setActivationFunction(ANN_MLP.SIGMOID_SYM);
+        Mat labels = new Mat();
+        Mat[] labs0_9 = new Mat[10];
+        for (int k = 0; k < 10; k++) {
+            labs0_9[k] = new Mat(1, 10, CvType.CV_32FC1);
+            float[] items = new float[] {
+                    k == 0 ? 1 : 0,
+                    k == 1 ? 1 : 0,
+                    k == 2 ? 1 : 0,
+                    k == 3 ? 1 : 0,
+                    k == 4 ? 1 : 0,
+                    k == 5 ? 1 : 0,
+                    k == 6 ? 1 : 0,
+                    k == 7 ? 1 : 0,
+                    k == 8 ? 1 : 0,
+                    k == 9 ? 1 : 0,
+            };
+            labs0_9[k].put(0,0,items);
+        }
+        for (int k = 0; k < trainLabs.size(); k++)
+            labels.push_back(labs0_9[trainLabs.get(k)]);
+        ann.train(trainData, Ml.ROW_SAMPLE, labels);
+
+        //ann.save(file.getAbsolutePath());
 
         //knn = KNearest.create();
         //knn.train(trainData, Ml.ROW_SAMPLE, Converters.vector_int_to_Mat(trainLabs));
     }
 
-    Mat extractFeatures(Mat in) {
-        in = in.clone();
-
-        // we need float data for knn:
-        in.convertTo(in, CvType.CV_32F);
-        // for opencv ml, each instance has to be a single row:
-        in = in.reshape(1,1);
+    Mat extractHoG(Mat in, int[] k_ref) {
 
         // generating Histogram of Gradients
         // - each image is 20 x 20, so we have 19 x 19 gradients
         // - the histogram will have 36 values, so we have a sensitivity of 10 degrees
         // - rotate by 50 degree in each direction to find best orientation
         //      when the sum of the first 3 hist items is the largest
-        float[] hog1 = new float[36];
+        float[] hog1 = new float[HIST_BUCKETS];
         float[] data = new float[20*20];
         in.get(0,0,data);
+
+        // finding min, mean and max pixel value
+        {
+            int min = 255, sum = 0, max = 0, cnt = 400;
+            for (int k = 0; k < 400; k++) {
+                min = Math.min(min, (int) data[k]);
+                max = Math.max(max, (int) data[k]);
+                sum += data[k];
+            }
+            float mean = (float) sum / cnt;
+            float half = (max + min) / 2f;
+            boolean invert = mean > half;
+            for (int k = 0; k < 400; k++) {
+                data[k] = (int)((data[k] - min) / (max - min) * 255.99f);
+                data[k] = (invert ? 255 - data[k] : data[k]);
+            }
+        }
+
+        double hog_range = HOG_ORIENTED ? 360 : 180;
         for (int y = 0; y < 19; y++)
             for (int x = 0; x < 19; x++)
             {
                 float a = data[(y)*20 + (x+1)] - data[(y+1)*20 + (x)];
                 float b = data[(y)*20 + (x)] - data[(y+1)*20 + (x+1)];
-                float n = (float)Math.sqrt(a*a + b*b);
-                double angle = Math.atan2(b, a) / Math.PI * 180;
-                int bucketA = (int)Math.floor(angle/10) % 36;
-                int bucketB = (bucketA + 1) % 36;
-                double p = (angle/10) - Math.floor(angle/10);
-                hog1[bucketA] += (float)(1-p)*n;
-                hog1[bucketB] += (float)p*n;
+                float n = (float)Math.pow(a*a + b*b, 1f/2);
+                if (n > 0) {
+                    double angle = (Math.atan2(b, a) / Math.PI * 180 + 360 + 45) % hog_range;
+                    double norm = HIST_BUCKETS/hog_range;
+                    double a_norm = angle*norm;
+                    int bucketA = (int)(Math.floor(a_norm) % HIST_BUCKETS);
+                    int bucketB = (bucketA + 1) % HIST_BUCKETS;
+                    double p = (a_norm) - bucketA;
+                    hog1[bucketA] += (float)(1-p)*n;
+                    hog1[bucketB] += (float)p*n;
+                }
             }
+
+        float maxN = -Float.MAX_VALUE;
+        float minN = Float.MAX_VALUE;
+        for (int k = 0; k < hog1.length; k++) {
+            minN = Math.min(minN, hog1[k]);
+            maxN = Math.max(maxN, hog1[k]);
+        }
+        for (int k = 0; k < hog1.length; k++) {
+            hog1[k] = (hog1[k] - minN) / (maxN - minN);
+        }
 
         int useK = 0;
         float max = 0;
-        for (int k = -5; k < +5; k++) {
-            float val = hog1[18+k-1] + hog1[18+k] + hog1[18+k+1];
-            if (val > max) useK = k;
+        final int mid = HIST_BUCKETS;
+        for (int k = -HIST_MAX_SEARCH_RANGE; k < +HIST_MAX_SEARCH_RANGE; k++) {
+            float val = hog1[(mid+k-1)%HIST_BUCKETS] + hog1[(mid+k)%HIST_BUCKETS] + hog1[(mid+k+1)%HIST_BUCKETS];
+            if (val > max) {
+                useK = k;
+                max = val;
+            }
         }
 
-        float[] hog2 = new float[36];
-        for (int k = 0; k < 36; k++)
-            hog2[k] = hog1[(k + useK + 36) % 36];
+        float[] hog2 = new float[HIST_BUCKETS];
+        for (int k = 0; k < HIST_BUCKETS; k++)
+            hog2[k] = hog1[(k + useK + HIST_BUCKETS) % HIST_BUCKETS];
 
-        Mat hog = new Mat(1, 36, CvType.CV_32F);
+        final float a1bucket = HOG_ORIENTED ? HIST_BUCKETS / 4f : HIST_BUCKETS / 2f;
+
+        k_ref[0] = ((int)(a1bucket*0) + useK + HIST_BUCKETS) % HIST_BUCKETS;
+        k_ref[1] = ((int)(a1bucket*1) + useK + HIST_BUCKETS) % HIST_BUCKETS;
+        k_ref[2] = ((int)(a1bucket*2) + useK + HIST_BUCKETS) % HIST_BUCKETS;
+        k_ref[3] = ((int)(a1bucket*3) + useK + HIST_BUCKETS) % HIST_BUCKETS;
+        k_ref[4] = (mid - HIST_MAX_SEARCH_RANGE + useK + HIST_BUCKETS) % HIST_BUCKETS;
+        k_ref[5] = (mid + HIST_MAX_SEARCH_RANGE + useK + HIST_BUCKETS) % HIST_BUCKETS;
+
+        Mat hog = new Mat(1, HIST_BUCKETS, CvType.CV_32F);
         hog.put(0,0,hog2);
 
         return hog;
@@ -433,7 +524,7 @@ public class AndroidCameraApi extends AppCompatActivity {
                     final byte[] bytes = new byte[buffer.remaining()];
                     buffer.get(bytes, 0, bytes.length);
 
-                    // Creating 20x20 gray scale bitmap to send to the KNN classifier
+                    // Creating 20x20 gray scale bitmap to use as preview image
                     final byte[] argbBytes = new byte[bytes.length * 4];
                     for(int i = 0; i < bytes.length; i++) {
                         int y = i % w;
@@ -444,7 +535,6 @@ public class AndroidCameraApi extends AppCompatActivity {
                         argbBytes[j*4 + 2] = bytes[i];
                         argbBytes[j*4 + 3] = (byte)255;
                     }
-
                     final Bitmap bitmap1 = Bitmap.createBitmap(h, w, Bitmap.Config.ARGB_8888);
                     bitmap1.copyPixelsFromBuffer(ByteBuffer.wrap(argbBytes));
                     final Bitmap bitmap2 = Bitmap.createScaledBitmap(
@@ -454,8 +544,8 @@ public class AndroidCameraApi extends AppCompatActivity {
                             false);
                     final Bitmap bitmap3 = Bitmap.createScaledBitmap(
                             bitmap2,
-                            500,
-                            500,
+                            400,
+                            400,
                             false);
 
                     Mat gs = new Mat();
@@ -463,20 +553,77 @@ public class AndroidCameraApi extends AppCompatActivity {
                     List<Mat> argb = new ArrayList<Mat>(4);
                     Core.split(gs, argb);
                     gs = argb.get(0);
+                    gs.convertTo(gs, CvType.CV_32F);
+                    gs = gs.reshape(1,1);
 
-                    Mat features = extractFeatures(gs);
+                    int[] k_ref = new int[6];
+                    Mat hog = extractHoG(gs, k_ref);
+                    Mat features;
+                    if (USE_IMAGE_BITS) {
+                        features = new Mat();
+                        Core.hconcat(Arrays.asList(hog, gs), features);
+                    }
+                    else {
+                        features = hog;
+                    }
+
+                    int[] white = new int[] { 255, 255, 255 };
+                    int[] yellow = new int[] { 255, 255, 0 };
+                    int[] blue = new int[] { 0, 0, 255 };
+                    int[] red = new int[] { 255, 0, 0 };
+                    int[] black = new int[] { 0, 0, 0 };
+
+                    // Creating histogram image from features
+                    int histH = 100, histW = HIST_BUCKETS;
+                    final byte[] argbHistBytes = new byte[histH * histW * 4];
+                    for(int i = 0; i < histH * histW; i++) {
+                        int x = i % histW;
+                        int y = histH - i / histW - 1;
+                        int j = y * histW + x;
+                        boolean inHist = hog.get(0, x)[0]*histH > (histH - y - 1);
+                        boolean inRange = k_ref[4] < k_ref[5] ? x >= k_ref[4] && x < k_ref[5] : x >= k_ref[4] || x < k_ref[5];
+                        boolean isHLine = x == k_ref[0] || x == k_ref[2];
+                        boolean isVLine = x == k_ref[1] || x == k_ref[3];
+                        int[] color = inHist ? (isHLine ? blue : isVLine ? red : black) : (inRange ? yellow : white);
+                        argbHistBytes[j*4 + 0] = (byte)color[0];
+                        argbHistBytes[j*4 + 1] = (byte)color[1];
+                        argbHistBytes[j*4 + 2] = (byte)color[2];
+                        argbHistBytes[j*4 + 3] = (byte)255;
+                    }
+                    final Bitmap histBmp = Bitmap.createBitmap(histW, histH, Bitmap.Config.ARGB_8888);
+                    histBmp.copyPixelsFromBuffer(ByteBuffer.wrap(argbHistBytes));
+                    final Bitmap histBmpScale = Bitmap.createScaledBitmap(
+                            histBmp,
+                            400,
+                            400,
+                            false);
 
                     Mat res = new Mat();
                     //final float p = knn.findNearest(features, 1, res);
-                    final float p = ann.predict(features, res, 0);
+                    float p = ann.predict(features, res, 0);
+                    //System.out.println(p + " " + res.dump());
+
+                    int maxClass = -1;
+                    float maxVal = -100000;
+                    float[] vals = new float[10];
+                    res.get(0, 0, vals);
+                    for (int k = 0; k < 10; k++) {
+                        if (maxVal < vals[k]) {
+                            maxVal = vals[k];
+                            maxClass = k;
+                        }
+                    }
+
+                    final int cls = maxClass;
 
                     // Show info
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
                             iv.setImageBitmap(bitmap3);
+                            iv_hist.setImageBitmap(histBmpScale);
                             tv.setText(""
-                                    + "class: " + p + "\n"
+                                    + "class: " + cls + "\n"
                                     + "f: " + frames + "\n"
                                     + "sz: " + w + "x" + h + "=" + h*w + "\n"
                                     + "len: " + bytes.length + "\n"
@@ -651,5 +798,17 @@ public class AndroidCameraApi extends AppCompatActivity {
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+    }
+
+    public static void printMat(Mat mat){
+        System.out.println();
+        System.out.print(mat.rows() + " * " + mat.cols());
+        for(int i = 0; i < mat.rows(); i++){
+            System.out.println();
+            for(int j = 0; j < mat.cols(); j++){
+                System.out.print(mat.get(i, j)[0] + " ");
+            }
+        }
+        System.out.println();
     }
 }

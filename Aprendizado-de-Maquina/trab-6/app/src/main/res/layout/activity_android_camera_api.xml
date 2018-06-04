@@ -9,7 +9,8 @@
         android:id="@+id/texture"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"/>
+        android:layout_alignParentTop="true"
+        />
     <TextView
         android:id="@+id/txt_tv"
         android:layout_width="wrap_content"
@@ -19,12 +20,21 @@
         android:layout_marginBottom="16dp"
         android:layout_marginTop="16dp"
         android:textColor="#FFFFFF"
-        android:text="Unknown" />
+        android:text="Unknown"
+        />
     <ImageView
         android:id="@+id/img_iv"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:padding="5dp"
         android:layout_margin="10dp"
+        />
+    <ImageView
+        android:id="@+id/img_hist"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:layout_alignParentRight="true"
+        android:padding="5dp"
         />
 </RelativeLayout>
