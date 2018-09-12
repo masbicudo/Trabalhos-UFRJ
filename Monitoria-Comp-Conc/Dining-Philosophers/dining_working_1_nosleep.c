@@ -36,8 +36,8 @@
 
 #define N 5 // number of philosophers
 
-#define EVEN ((ph_num & ~1) % N)
-#define ODD  ((ph_num |  1) % N)
+#define EVEN (((ph_num + 1) & ~1) % N)
+#define ODD  (((ph_num & ~1) + 1) % N)
 
 sem_t chopsticks[N]; // binary semaphores controling the access to each chopstick
 

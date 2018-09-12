@@ -55,8 +55,9 @@
 #define HUNGRY 1
 #define EATING 2
 
-#define LEFT ((ph_num + N - 1) % N)
-#define RIGHT ((ph_num + 1) % N)
+#define ITEM_MOD(n) (((ph_num % N) + N + (n)) % N)
+#define LEFT  (ITEM_MOD(-1))
+#define RIGHT (ITEM_MOD(+1))
 
 sem_t stone_mutex;
 sem_t can_eat[N];
@@ -139,7 +140,7 @@ void set_permition_to_eat_if_needed(int ph_num)
     if (state[ph_num] == HUNGRY && state[LEFT] != EATING && 
     	state[RIGHT] != EATING)
     {
-        printf("Philosopher %d takes chopstick %d and %d\n", 
+        printf("Philosopher %d takes chopsticks shared with %d and %d\n", 
         	ph_num + 1, LEFT + 1, RIGHT + 1);
         sem_post(&can_eat[ph_num]); // philosopher is allowed to eat
         // [philosopher may be "allowing himself" to eat :)]
@@ -155,7 +156,7 @@ void put_chopstick(int ph_num)
     	// have the stone!)
     {
         state[ph_num] = THINKING;
-        printf("Philosopher %d putting chopstick %d and %d down\n", 
+        printf("Philosopher %d putting chopsticks shared with %d and %d down\n", 
         	ph_num + 1, LEFT + 1, RIGHT + 1);
         printf("Philosopher %d is thinking\n", ph_num + 1);
 
