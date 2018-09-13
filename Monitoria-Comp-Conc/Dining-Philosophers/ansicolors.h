@@ -1,0 +1,45 @@
+#define ANSI_RESET           "\033[0m"
+
+#define ANSI_TEXT_COLOR_BLACK           "\033[30m"
+#define ANSI_TEXT_COLOR_RED             "\033[31m"
+#define ANSI_TEXT_COLOR_GREEN           "\033[32m"
+#define ANSI_TEXT_COLOR_YELLOW          "\033[33m"
+#define ANSI_TEXT_COLOR_BLUE            "\033[34m"
+#define ANSI_TEXT_COLOR_MAGENTA         "\033[35m"
+#define ANSI_TEXT_COLOR_CYAN            "\033[36m"
+#define ANSI_TEXT_COLOR_WHITE           "\033[37m"
+
+#define ANSI_TEXT_COLOR_GRAY            "\033[30;1m"
+#define ANSI_TEXT_COLOR_BRIGHT_RED      "\033[31;1m"
+#define ANSI_TEXT_COLOR_BRIGHT_GREEN    "\033[32;1m"
+#define ANSI_TEXT_COLOR_BRIGHT_YELLOW   "\033[33;1m"
+#define ANSI_TEXT_COLOR_BRIGHT_BLUE     "\033[34;1m"
+#define ANSI_TEXT_COLOR_BRIGHT_MAGENTA  "\033[35;1m"
+#define ANSI_TEXT_COLOR_BRIGHT_CYAN     "\033[36;1m"
+#define ANSI_TEXT_COLOR_BRIGHT_WHITE    "\033[37;1m"
+
+#define ANSI_TEXT_COLOR_256(x)          "\033[38;5;" x "m"
+
+#define ANSI_TEXT_COLOR_RGB(r,g,b)      "\033[38;2;" r ";" g ";" b "m"
+
+#define ANSI_BACK_COLOR_BLACK           "\033[40m"
+#define ANSI_BACK_COLOR_RED             "\033[41m"
+#define ANSI_BACK_COLOR_GREEN           "\033[42m"
+#define ANSI_BACK_COLOR_YELLOW          "\033[43m"
+#define ANSI_BACK_COLOR_BLUE            "\033[44m"
+#define ANSI_BACK_COLOR_MAGENTA         "\033[45m"
+#define ANSI_BACK_COLOR_CYAN            "\033[46m"
+#define ANSI_BACK_COLOR_WHITE           "\033[47m"
+
+#define ANSI_BACK_COLOR_GRAY            "\033[40;1m"
+#define ANSI_BACK_COLOR_BRIGHT_RED      "\033[41;1m"
+#define ANSI_BACK_COLOR_BRIGHT_GREEN    "\033[42;1m"
+#define ANSI_BACK_COLOR_BRIGHT_YELLOW   "\033[43;1m"
+#define ANSI_BACK_COLOR_BRIGHT_BLUE     "\033[44;1m"
+#define ANSI_BACK_COLOR_BRIGHT_MAGENTA  "\033[45;1m"
+#define ANSI_BACK_COLOR_BRIGHT_CYAN     "\033[46;1m"
+#define ANSI_BACK_COLOR_BRIGHT_WHITE    "\033[47;1m"
+
+#define ANSI_BACK_COLOR_256(x)          "\033[48;5;" x "m"
+
+#define ANSI_BACK_COLOR_RGB(r,g,b)      "\033[48;2;" r ";" g ";" b "m"

@@ -33,11 +33,12 @@
 #include <semaphore.h>
 #include <pthread.h>
 #include <errno.h>
+#include "ansicolors.h"
 
 #define N 5 // number of philosophers
 
-#define EVEN (((ph_num + 1) & ~1) % N)
-#define ODD  (((ph_num & ~1) + 1) % N)
+#define EVEN (((ph_num & ~1) + 1) % N)
+#define ODD  (((ph_num + 1) & ~1) % N)
 
 sem_t chopsticks[N]; // binary semaphores controling the access to each chopstick
 
@@ -50,17 +51,14 @@ void test(int);
 
 int phil_num[N];
 
-#define ANSI_COLOR_RED     "\x1b[31m"
-#define ANSI_COLOR_GREEN   "\x1b[32m"
-#define ANSI_COLOR_YELLOW  "\x1b[33m"
-#define ANSI_COLOR_BLUE    "\x1b[34m"
-#define ANSI_COLOR_MAGENTA "\x1b[35m"
-#define ANSI_COLOR_CYAN    "\x1b[36m"
-#define ANSI_COLOR_RESET   "\x1b[0m"
-
 int main()
 {
     printf("Dining Philosophers: working example 1\n");
+
+    int ph_num;
+    for (ph_num = 0; ph_num < N; ph_num++) {
+        printf(ANSI_TEXT_COLOR_BLUE "Philosopher %d needs even chopstick %d and then odd %d\n" ANSI_RESET, ph_num + 1, EVEN + 1, ODD + 1);
+    }
 
     int i, retval;
     pthread_t thread_id[N]; // each thread will simulate the behavior of one philosopher
@@ -89,7 +87,7 @@ void *philospher(void *num)
     while (1)
     {
         take_fork(i);
-        printf(ANSI_COLOR_GREEN "Philosopher %d is eating\n" ANSI_COLOR_RESET, i + 1);
+        printf(ANSI_TEXT_COLOR_GREEN "Philosopher %d is eating\n" ANSI_RESET, i + 1);
         put_fork(i);
     }
 }

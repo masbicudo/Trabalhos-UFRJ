@@ -5,6 +5,7 @@
         "unistd.h": "c",
         "pthread.h": "c",
         "errno.h": "c",
-        "semaphore.h": "c"
+        "semaphore.h": "c",
+        "ansicolors.h": "c"
     }
 }

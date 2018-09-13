@@ -40,3 +40,5 @@ Os exemplos interativos desse projeto podem ser acessador nesses links:
 - https://repl.it/@masbicudo/diningworking2
 - https://repl.it/@masbicudo/diningdeadlock1
 - https://repl.it/@masbicudo/diningstarve1
+- https://repl.it/@masbicudo/diningdeadlocksemaphore1
+- https://repl.it/@masbicudo/diningworkingeventualdeadlock

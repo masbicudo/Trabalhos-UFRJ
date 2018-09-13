@@ -29,12 +29,13 @@
 #include <stdio.h>
 #include <pthread.h>
 #include <unistd.h>
+#include "ansicolors.h"
 
 #define N 5 // number of philosophers
 
-#define ITEM_MOD(n) (((ph_num % N) + N + (n)) % N)
-#define RIGHT (ITEM_MOD(0))
-#define LEFT  (ITEM_MOD(1))
+#define MODULO(n) ((((n) % N) + N) % N)
+#define LEFT  (MODULO(ph_num + 0))
+#define RIGHT (MODULO(ph_num - 1))
 
 pthread_mutex_t chopsticks[N]; // mutexes controling the access to each chopstick
 
@@ -42,9 +43,15 @@ void *philospher(void *num);
 void take_fork(int);
 void put_fork(int);
 
+
 int main()
 {
-    printf("Dining Philosophers: deadlock example 1\n");
+    printf(ANSI_TEXT_COLOR_WHITE "Dining Philosophers: deadlock example 1\n" ANSI_RESET);
+
+    int ph_num;
+    for (ph_num = 0; ph_num < N; ph_num++) {
+        printf(ANSI_TEXT_COLOR_BLUE "Philosopher %d needs left chopstick %d and then right chopstick %d\n" ANSI_RESET, ph_num + 1, LEFT + 1, RIGHT + 1);
+    }
 
     int phil_num[N];
     int i;
