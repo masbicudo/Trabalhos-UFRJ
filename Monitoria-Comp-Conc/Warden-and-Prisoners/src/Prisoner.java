@@ -29,8 +29,12 @@ public class Prisoner extends Thread {
         while (true) {
             // go back to the cell
             // stay there until asked to go to the room
-            // or until set free
+            //      or until set free
+            // go to the room when asked
+            // do something in the room
+            // get out of the room
             this.state = IN_CELL;
+            System.out.println("Prisoner: "+this.id+" wait in cell");
             while (this.state == IN_CELL)
                 this.wait();
 
@@ -59,9 +63,12 @@ public class Prisoner extends Thread {
         // If I didn't switch the trigger on yet, then do it
         if (this.count < 1 && !this.room.isTriggerSet())
         {
-            System.out.println("Prisoner " + this.id + " turns trigger on!");
+            System.out.println("Prisoner: " + this.id + " turns trigger on!");
             this.count++;
             this.room.setTrigger();
+        }
+        else {
+            System.out.println("Prisoner: " + this.id + " in room... nothing to do!");
         }
     }
 
@@ -76,6 +83,7 @@ public class Prisoner extends Thread {
     }
 
     public synchronized void gotoRoom() {
+        System.out.println("Prisoner: " + this.id + " going to room.");
         this.state = IN_ROOM;
         this.notifyAll();
     }

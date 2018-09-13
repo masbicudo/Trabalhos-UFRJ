@@ -14,7 +14,7 @@ Dois filósofos adjacentes não podem comer ao mesmo tempo, pois eles dividem o 
 Questão
 -------
 
-Como criar uma disciplina entre os filósofos de tal forma que qualquer um deles possa, eventualmente, comer ao ficar com fome?
+Como criar um protocolo entre os filósofos de tal forma que qualquer um deles possa, eventualmente, comer ao ficar com fome?
 
 A resposta requer que os filósofos sejam capazes de se organizar usando alguma forma de [exclusão mútua](https://en.wikipedia.org/wiki/Mutual_exclusion),
 pois mais de um filósofo não pode pegar o mesmo talher.
@@ -23,6 +23,13 @@ Ambiente
 ========
 
 [Instruções para Computação Concorrente](../readme.md)
+
+Compilando
+==========
+
+No Linux ou no WSL:
+
+    gcc _arquivo_.c -lpthread
 
 Códigos interativos online
 ==========================

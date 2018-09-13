@@ -37,8 +37,8 @@
 
 #define N 5 // number of philosophers
 
-#define EVEN ((ph_num & ~1) % N)
-#define ODD  ((ph_num |  1) % N)
+#define EVEN (((ph_num + 1) & ~1) % N)
+#define ODD  (((ph_num & ~1) + 1) % N)
 
 sem_t chopsticks[N]; // binary semaphores controling the access to each chopstick
 
@@ -61,6 +61,11 @@ int phil_num[N];
 
 int main()
 {
+    int ph_num;
+    for (ph_num = 0; ph_num < N; ph_num++) {
+        printf("Philosopher %d needs chopsticks %d and %d\n", ph_num + 1, EVEN + 1, ODD + 1);
+    }
+
     printf("Dining Philosophers: working example 1\n");
 
     int i, retval;

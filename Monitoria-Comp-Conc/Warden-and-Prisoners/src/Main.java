@@ -1,7 +1,12 @@
 public class Main {
-    private static final int numPrisoners = 5;
+    private static int numPrisoners = 5;
 
     public static void main(String[] args) throws Exception {
+        if (args.length >= 1)
+            numPrisoners = Integer.parseInt(args[0]);
+
+        System.out.println(numPrisoners);
+
         Prisoner[] prisoners = new Prisoner[numPrisoners];
         Room room = new Room();
         Warden warden = new Warden(room, prisoners);

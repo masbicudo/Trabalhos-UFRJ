@@ -48,8 +48,9 @@
 
 #define N 5 // number of philosophers
 
-#define LEFT ((ph_num + 0) % N)
-#define RIGHT ((ph_num + 1) % N)
+#define ITEM_MOD(n) (((ph_num % N) + N + (n)) % N)
+#define RIGHT (ITEM_MOD(0))
+#define LEFT  (ITEM_MOD(1))
 
 sem_t chopsticks[N]; // binary semaphores controling the access to each chopstick
 

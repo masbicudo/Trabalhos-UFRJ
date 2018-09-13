@@ -1,0 +1,24 @@
+# Roteiro da aula de 24/04/2018 de Computação Concorrente
+
+1) Acabar o Jantar dos Filósofos
+  1.1) Solução que use tickets, como na Lamport's Bakery
+  1.2) Solução que use contador de espera máxima para cada filósofo
+
+2) Mostrar implementações das primitivas
+  2.1) Peterson
+    2.1.1) Peterson partial - sequential
+    2.1.2) Peterson partial - concurrent
+  2.2) Lamport's Bakery
+
+3) Explicar semáforos
+  3.1) Mostrar implementação básica usando mutex e variável de condição
+  3.2) Métodos pthread_cond_wait(), pthread_cond_signal() e pthread_cond_broadcast()
+        Na dúvida, use pthread_cond_broadcast()
+
+Fazer um quadro mostrando as primitivas em C e em Java:
+  Java              |  C
+  -------------------------------------------------------
+  synchronized { }  |  pthread_mutex_lock() e pthread_mutex_unlock()
+  wait()            |  pthread_cond_wait()
+  notify()          |  pthread_cond_signal()
+  notifyAll()       |  pthread_cond_broadcast()

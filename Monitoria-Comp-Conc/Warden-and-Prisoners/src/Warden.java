@@ -37,6 +37,7 @@ public class Warden extends Thread {
 
             // let the prisoner enter the room
             // then wait for him to leave
+            System.out.println("Warden: orders inmate " + id + " to enter room.");
             this.room.openDoor();
             p.gotoRoom();
             while (this.room.isDoorOpen())
@@ -62,6 +63,7 @@ public class Warden extends Thread {
     }
 
     public synchronized void notifyPrisonerLeavingRoom() {
+        // there is only one warden, I could have used notify()
         this.room.closeDoor();
         this.notifyAll();
     }

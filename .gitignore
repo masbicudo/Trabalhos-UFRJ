@@ -81,3 +81,8 @@ fabric.properties
 *.out
 reclamacoes-fundamentadas-sindec-*.csv
 *.orig
+*.class
+.idea/
+.vscode/
+*.log
+build/
