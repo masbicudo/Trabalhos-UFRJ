@@ -30,12 +30,13 @@
 #include <semaphore.h>
 #include <pthread.h>
 #include <unistd.h>
+#include "ansicolors.h"
 
 #define N 5 // number of philosophers
 
-#define ITEM_MOD(n) (((ph_num % N) + N + (n)) % N)
-#define RIGHT (ITEM_MOD(0))
-#define LEFT  (ITEM_MOD(1))
+#define MODULO(n) ((((n) % N) + N) % N)
+#define LEFT  (MODULO(ph_num + 0))
+#define RIGHT (MODULO(ph_num - 1))
 
 sem_t chopsticks[N]; // binary semaphores controling the access to each chopstick
 
@@ -46,6 +47,11 @@ void put_fork(int);
 int main()
 {
     printf("Dining Philosophers: deadlock example 1\n");
+
+    int ph_num;
+    for (ph_num = 0; ph_num < N; ph_num++) {
+        printf(ANSI_TEXT_COLOR_BLUE "Philosopher %d needs left chopstick %d and then right chopstick %d\n" ANSI_RESET, ph_num + 1, LEFT + 1, RIGHT + 1);
+    }
 
     int phil_num[N];
     int i;

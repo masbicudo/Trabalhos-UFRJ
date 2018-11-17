@@ -21,6 +21,7 @@
  ***********************************************************/
 
 // SOLUTION:
+// 
 // The philosophers will always get both chopsticks atomically.
 // In this process the philosopher check whether adjacent ones
 // are feasting. If they are, he waits until he can feast.
@@ -28,7 +29,9 @@
 // want to feast as soon as he finishes himself. If adjacent
 // philosopher is waiting, then he can feast finally.
 //
-// PROBLEM:
+//
+// PROBLEM: 2nd order starvation still exists!
+// 
 // This solution overcomes a starvation problem by making
 // philosophers hint adjacent ones when he finishes feasting.
 // This allows hungry adjacent philosophers to take action
@@ -48,6 +51,7 @@
 #include <pthread.h>
 #include <errno.h>
 #include <unistd.h>
+#include "ansicolors.h"
 
 #define N 5
 
@@ -55,9 +59,9 @@
 #define HUNGRY 1
 #define EATING 2
 
-#define ITEM_MOD(n) (((ph_num % N) + N + (n)) % N)
-#define LEFT  (ITEM_MOD(-1))
-#define RIGHT (ITEM_MOD(+1))
+#define MODULO(n) ((((n) % N) + N) % N)
+#define LEFT  (MODULO(ph_num + 1))
+#define RIGHT (MODULO(ph_num - 1))
 
 sem_t stone_mutex;
 sem_t can_eat[N];
@@ -72,17 +76,14 @@ void set_permition_to_eat_if_needed(int);
 int state[N];
 int phil_num[N];
 
-#define ANSI_COLOR_RED     "\x1b[31m"
-#define ANSI_COLOR_GREEN   "\x1b[32m"
-#define ANSI_COLOR_YELLOW  "\x1b[33m"
-#define ANSI_COLOR_BLUE    "\x1b[34m"
-#define ANSI_COLOR_MAGENTA "\x1b[35m"
-#define ANSI_COLOR_CYAN    "\x1b[36m"
-#define ANSI_COLOR_RESET   "\x1b[0m"
-
 int main()
 {
     printf("Dining Philosophers: working example 2\n");
+
+    int ph_num;
+    for (ph_num = 0; ph_num < N; ph_num++) {
+        printf(ANSI_TEXT_COLOR_BLUE "Philosopher %d shares chopsticks with %d and %d\n" ANSI_RESET, ph_num + 1, LEFT + 1, RIGHT + 1);
+    }
 
     int i, retval;
     pthread_t thread_id[N];
@@ -110,7 +111,7 @@ void *philospher(void *num)
     {
         sleep(1);
         take_chopstick(i);
-        printf(ANSI_COLOR_GREEN "Philosopher %d is eating\n" ANSI_COLOR_RESET, i + 1);
+        printf(ANSI_TEXT_COLOR_GREEN "Philosopher %d is eating\n" ANSI_RESET, i + 1);
         sleep(0);
         put_chopstick(i);
     }
