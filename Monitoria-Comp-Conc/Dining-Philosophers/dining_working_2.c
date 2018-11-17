@@ -68,7 +68,7 @@ sem_t can_eat[N];
 
 extern int errno;
 
-void *philospher(void *num);
+void *philosopher(void *num);
 void take_chopstick(int);
 void put_chopstick(int);
 void set_permition_to_eat_if_needed(int);
@@ -97,13 +97,13 @@ int main()
     for (i = 0; i < N; i++)
     {
         phil_num[i] = i;
-        pthread_create(&thread_id[i], NULL, philospher, &phil_num[i]);
+        pthread_create(&thread_id[i], NULL, philosopher, &phil_num[i]);
     }
     for (i = 0; i < N; i++)
         pthread_join(thread_id[i], NULL); // waits forever
 }
 
-void *philospher(void *num)
+void *philosopher(void *num)
 {
     int i = *((int*)num);
     printf("Philosopher %d is thinking\n", i + 1);

@@ -26,7 +26,7 @@
 // in this code.
 //
 // Devise a way to change this code so that the deadlock
-// problem shows up immediatelly, without changing the overall
+// problem shows up immediately, without changing the overall
 // behaviour.
 //
 // Hint: look at the take_chopstick function? Is this function atomic?
@@ -45,7 +45,7 @@
 
 sem_t chopsticks[N]; // binary semaphores controling the access to each chopstick
 
-void *philospher(void *num);
+void *philosopher(void *num);
 void take_chopstick(int);
 void put_chopstick(int);
 
@@ -68,14 +68,14 @@ int main()
     for (i = 0; i < N; i++)
     {
         phil_num[i] = i;
-        pthread_create(&thread_id[i], NULL, philospher, &phil_num[i]);
+        pthread_create(&thread_id[i], NULL, philosopher, &phil_num[i]);
     }
 
     for (i = 0; i < N; i++)
         pthread_join(thread_id[i], NULL);
 }
 
-void *philospher(void *num)
+void *philosopher(void *num)
 {
     int i = *((int*)num);
     printf("Philosopher %d is thinking\n", i + 1);

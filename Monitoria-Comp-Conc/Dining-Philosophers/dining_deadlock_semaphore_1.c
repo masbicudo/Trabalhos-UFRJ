@@ -40,9 +40,9 @@
 
 sem_t chopsticks[N]; // binary semaphores controling the access to each chopstick
 
-void *philospher(void *num);
-void take_fork(int);
-void put_fork(int);
+void *philosopher(void *num);
+void take_chopstick(int);
+void put_chopstick(int);
 
 int main()
 {
@@ -63,26 +63,26 @@ int main()
     for (i = 0; i < N; i++)
     {
         phil_num[i] = i;
-        pthread_create(&thread_id[i], NULL, philospher, &phil_num[i]);
+        pthread_create(&thread_id[i], NULL, philosopher, &phil_num[i]);
     }
 
     for (i = 0; i < N; i++)
         pthread_join(thread_id[i], NULL);
 }
 
-void *philospher(void *num)
+void *philosopher(void *num)
 {
     int i = *((int*)num);
     printf("Philosopher %d is thinking\n", i + 1);
     while (1)
     {
-        take_fork(i);
+        take_chopstick(i);
         sleep(0);
-        put_fork(i);
+        put_chopstick(i);
     }
 }
 
-void take_fork(int ph_num)
+void take_chopstick(int ph_num)
 {
     // waiting for left chopstick
     printf("Philosopher %d is Hungry and waits for chopstick %d\n", ph_num + 1, LEFT + 1);
@@ -100,9 +100,9 @@ void take_fork(int ph_num)
 
 }
 
-void put_fork(int ph_num)
+void put_chopstick(int ph_num)
 {
-    printf("Philosopher %d putting fork %d and %d down\n", ph_num + 1, LEFT + 1, RIGHT + 1);
+    printf("Philosopher %d putting chopstick %d and %d down\n", ph_num + 1, LEFT + 1, RIGHT + 1);
     printf("Philosopher %d is thinking\n", ph_num + 1);
     sem_post(&chopsticks[LEFT]);
     sleep(1);

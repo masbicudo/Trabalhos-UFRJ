@@ -45,7 +45,7 @@ sem_t chopsticks[N]; // binary semaphores controling the access to each chopstic
 
 extern int errno;
 
-void *philospher(void *num);
+void *philosopher(void *num);
 void take_chopstick(int);
 void put_chopstick(int);
 void test(int);
@@ -74,14 +74,14 @@ int main()
     {
         phil_num[i] = (N - i + 1) % N; // shuffling philosophers creation order
         printf("Created philosopher %d\n", phil_num[i] + 1);
-        pthread_create(&thread_id[i], NULL, philospher, &phil_num[i]);
+        pthread_create(&thread_id[i], NULL, philosopher, &phil_num[i]);
     }
 
     for (i = 0; i < N; i++)
         pthread_join(thread_id[i], NULL);
 }
 
-void *philospher(void *num)
+void *philosopher(void *num)
 {
     int i = *((int*)num);
     printf("Philosopher %d is thinking\n", i + 1);
