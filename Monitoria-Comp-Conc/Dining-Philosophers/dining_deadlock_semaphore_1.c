@@ -96,7 +96,7 @@ void take_fork(int ph_num)
 
 void put_fork(int ph_num)
 {
-    printf("Philosopher %d putting fork %d and %d down\n", ph_num + 1, LEFT + 1, ph_num + 1);
+    printf("Philosopher %d putting fork %d and %d down\n", ph_num + 1, LEFT + 1, RIGHT + 1);
     printf("Philosopher %d is thinking\n", ph_num + 1);
     sem_post(&chopsticks[LEFT]);
     sleep(1);
