@@ -171,7 +171,7 @@ void put_chopstick(int ph_num)
     // (philosophers can only change global state if they have the stone!)
 }
 
-// TODOs:
+// TO-DOs:
 //
 // 1)   break set_permition_to_eat_if_needed into 
 //      set_permition_to_myself_to_eat and

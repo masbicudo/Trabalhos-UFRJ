@@ -16,11 +16,18 @@ Problemas
 
     - por falta de sincronia: a rotina sempre pede para usar o recurso na hora errada, se fosse um pouco antes ou um pouco depois ela conseguiria
     - por falta de prioridade: a rotina possui baixa prioridade, sendo que outras de alta prioridade estão sempre utilizando o recurso desejado
+    - por falta de justiça: a rotina nunca consegue todos os recursos que precisa, pois um outro grupo domina estes recursos
+    - livelock: caso especial em que cada um passa a vez para o próximo de forma circular e ninguém prossegue
 
 Questão
 -------
 
 Como criar uma disciplina entre as rotinas de forma que todas possam eventualmente utilizar os recursos e produzir em conjunto um resultado útil?
+
+Soluções
+--------
+
+[Tópico sobre soluções plausíveis para problemas de dead-lock](solucoes.md)
 
 Rodando os exemplos
 ===================

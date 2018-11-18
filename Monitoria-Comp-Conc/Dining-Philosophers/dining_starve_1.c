@@ -28,7 +28,7 @@
 //
 // This code works when philosophers have out-of-synchrony timings,
 // but there is a problem when timings align.
-// If the philosophers somehow sincronize the access to
+// If the philosophers somehow synchronize the access to
 // the chopsticks, so that one gets them and uses them
 // for 6 seconds, and the other one tries to get the
 // chopsticks in the middle of this 6 seconds, every 6
