@@ -28,6 +28,10 @@
 // When adjacent philosophers want a chopstick, they will
 // either be running to get their first chopsticks, or for
 // their second chopsticks.
+//
+// See more at: https://en.wikipedia.org/wiki/Dining_philosophers_problem#Problems
+//
+// Exercises inside: dining_working_1.c
 
 #include <stdio.h>
 #include <semaphore.h>

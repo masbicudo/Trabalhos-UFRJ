@@ -28,6 +28,20 @@
 // When adjacent philosophers want a chopstick, they will
 // either be running to get their first chopsticks, or for
 // their second chopsticks.
+//
+// Exercise:
+//  a) Explain why this solution is a derivative of the "Resource hierarchy solution"
+//      https://en.wikipedia.org/wiki/Dining_philosophers_problem#Resource_hierarchy_solution
+//  b) Implement the "Arbitrator solution" and explain your code. Optionally implement the modifications.
+//      https://en.wikipedia.org/wiki/Dining_philosophers_problem#Arbitrator_solution
+//  c) Is it easier to solve the problem if philosophers can choose where to sit? Explain! Optionally implement.
+//  d) Is it possible to solve the problem with a queue? Explain! Optionally implement one or both.
+//      - if philosopher can choose where to sit
+//      - if philosopher place is predetermined
+//  e) Is it possible to solve the problem by forcing an interval of quiescence?
+//      For example: if one cannot eat for any reason, then anyone after that must wait until nobody is eating
+//      Explain how and what are the problems.
+//      Optionally implement and explain the code.
 
 #include <stdio.h>
 #include <semaphore.h>

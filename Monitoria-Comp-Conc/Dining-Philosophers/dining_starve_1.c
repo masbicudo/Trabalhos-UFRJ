@@ -40,6 +40,14 @@
 // count the number of seconds that a successful
 // attempt to feast takes, and then count the
 // number of seconds that an unsuccessful attempt takes.
+//
+// See more at: https://en.wikipedia.org/wiki/Dining_philosophers_problem#Problems
+//
+// Exercise:
+//  a) Can this solution cause a livelock? Explain.
+//  b) Implement the livelock situation provided at wikipedia.
+//     Wait for 10 seconds instead of 10 minutes
+//      https://en.wikipedia.org/wiki/Dining_philosophers_problem#Problems
 
 #include <stdio.h>
 #include <semaphore.h>

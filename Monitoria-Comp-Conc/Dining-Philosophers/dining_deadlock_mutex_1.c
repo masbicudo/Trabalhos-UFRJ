@@ -25,6 +25,13 @@
 // and then get the right one. If all of them get their
 // respective left at the same time, then they will wait forever
 // for the right one.
+//
+// See more at: https://en.wikipedia.org/wiki/Dining_philosophers_problem#Problems
+//
+// Exercise:
+//  a) Devise a way to synchronize this wrong code (using sleeps for example)
+//     so that it appears to work forever, but only because the deadlock
+//     condition is being starved itself. Implement and explain.
 
 #include <stdio.h>
 #include <pthread.h>

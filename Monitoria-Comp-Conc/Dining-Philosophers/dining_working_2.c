@@ -45,6 +45,14 @@
 //  B:    wwwwww!wwwwwwwwwww!wwwwwwwwww!wwwwwwwwwww!wwwwwwww...
 //  C:       fffffffffffffff        fffffffffffffff        f...
 //  Legend: f = feasting; w = waiting; ! = poked by adjacent
+//
+// Exercises:
+//  a) Is this solution related to the Chandy/Misra solution?
+//      https://en.wikipedia.org/wiki/Dining_philosophers_problem#Chandy/Misra_solution
+//  b) Implement the Chandy/Misra solution
+//  c) Devise a way to solve the 2nd order starvation problem. Optionally implement the modifications.
+//  d) Does the Chandy/Misra solution has a 2nd order starvation problem.
+//  e) Explain the Chandy/Misra problem with initial condition. Optionally implement.
 
 #include <stdio.h>
 #include <semaphore.h>

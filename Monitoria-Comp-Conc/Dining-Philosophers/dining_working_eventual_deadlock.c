@@ -25,11 +25,13 @@
 // and then get the right one. A deadlock will eventually happen
 // in this code.
 //
-// Devise a way to change this code so that the deadlock
-// problem shows up immediately, without changing the overall
-// behaviour.
-//
-// Hint: look at the take_chopstick function? Is this function atomic?
+// Exercise:
+//  a) Devise a way to change this code so that the deadlock
+//     problem shows up with only a few iterations, without
+//     changing the overall behaviour. Explain.
+//     Hint: look at the take_chopstick function? Is this function atomic?
+//  b) There is a trivial way of making this code deadlock very fast.
+//     What is it?
 
 #include <stdio.h>
 #include <semaphore.h>
@@ -94,6 +96,8 @@ void take_chopstick(int ph_num)
     sem_wait(&chopsticks[LEFT]);
     // got left chopstick
     printf("Philosopher %d got chopstick %d\n", ph_num + 1, LEFT + 1);
+
+    sleep(1);
 
     // waiting for right chopstick
     printf("Philosopher %d now waits for chopstick %d\n", ph_num + 1, RIGHT + 1);

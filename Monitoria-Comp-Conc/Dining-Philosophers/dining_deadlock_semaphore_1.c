@@ -25,6 +25,10 @@
 // and then get the right one. If all of them get their
 // respective left at the same time, then they will wait forever
 // for the right one.
+//
+// See more at: https://en.wikipedia.org/wiki/Dining_philosophers_problem#Problems
+//
+// Exercises inside: dining_deadlock_mutex.c
 
 #include <stdio.h>
 #include <semaphore.h>
