@@ -1,9 +1,7 @@
-#include "hash.h"
+#ifndef MAP_H_
+#define MAP_H_
 
-#define OK 0
-#define ERR_INVALID_KEY 100
-#define ERR_DUPLICATE_KEY 101
-#define ERR_KEY_NOT_FOUND 102
+#include "hash.h"
 
 typedef struct {
     int key; // key of the entry
@@ -19,3 +17,13 @@ typedef struct {
     int growth_trigger; // count at which to grow the list
     float growth_rate; // how much to grow the list when growing the next time
 } map;
+
+int map_init(map* map, int capacity, int growth_trigger, float growth_rate);
+int map_grow(map* map);
+int map_insert(map* map, int key, int value);
+int map_get(map* map, int key, int* out);
+int map_delete(map* map, int key);
+int map_info(map* map, char* out, int length);
+void map_dispose(map* map);
+
+#endif
