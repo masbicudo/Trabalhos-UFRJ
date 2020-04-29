@@ -1,0 +1,33 @@
+# Multiplicação de matrizes
+
+Multiplicar matrizes é uma operação paralelizável. Por mais inocente que pareça
+apenas paralelizar essa operação não é o suficiente para garantir o máximo de
+performance. É preciso fazer algo além da paralelização. Pesquisando sobre a
+implementação dessa operação, você provavelmente vai se deparar com o conceito
+de cache-oblivious matrix multiplication.
+
+Q: Em que aspectos o algoritmo cache-oblivious e paralelização?
+
+    R:  Acho que o problema principal aqui é a localidade da cache. O algoritmo
+        cache-oblivous usa a localidade dos dados em problemas que permitem
+        usar uma estratégia divide & conquer, de tal forma que em algum momento
+        um subset do problema irá caber por completo em qualquer nível de cache.
+        Por isso o nome cache-oblivious, tradução livre indiferente-ao-cache...
+        ele tende ao ótimo, indiferente de quantos níveis de cache e indiferente
+        ao tamanho de tais caches.
+        
+        O paralelismo vai um pouco contra isso, no que diz respeito a escritas.
+        Quando vários processadores estão escrevendo em um único conjunto da
+        cache, isso faz com que a cache seja constantemente invalidada. Dessa
+        forma o ideal é que threads que fazem muitas escritas façam isso em
+        localidades distintas de cache para que uma escrita não invalide a outra.
+        Mas há ainda uma outra face do paralelismo, que são leituras. Threads
+        que leêm em posições mais próximas da memória podem se beneficiar de
+        transferências entre caches no mesmo nível. Ou seja, se um processador
+        já tem o dado, e outro processador quer o dado, ele não vai na memória,
+        mas sim pede pro outra que já tem.
+        
+        Ou seja, cache-oblivious se baseia na proximidade dos dados, paralelismo
+        se beneficia mais quando há dispersão dos dados.
+
+Q: Discuta ideias de como conciliar paralelização e cache-oblivious.
