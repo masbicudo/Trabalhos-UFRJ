@@ -1,0 +1,19 @@
+# Roteiro da aula de 24/04/2018 de Computação Concorrente
+
+1) Warden and Prisoners em Java
+  1.1) Explicar synchronized, wait(), notify() e notifyAll() em Java
+        Na dúvida, use notifyAll()
+  1.2) Derivar solução para condição inicial desconhecida
+
+2) Explicar semáforos
+  2.1) Mostrar implementação básica usando mutex e variável de condição
+  2.2) Métodos pthread_cond_wait(), pthread_cond_signal() e pthread_cond_broadcast()
+        Na dúvida, use pthread_cond_broadcast()
+
+Fazer um quadro mostrando as primitivas em C e em Java:
+  Java              |  C
+  -------------------------------------------------------
+  synchronized { }  |  pthread_mutex_lock() e pthread_mutex_unlock()
+  wait()            |  pthread_cond_wait()
+  notify()          |  pthread_cond_signal()
+  notifyAll()       |  pthread_cond_broadcast()

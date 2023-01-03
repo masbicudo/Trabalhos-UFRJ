@@ -1,0 +1,20 @@
+Fazer:
+
+    Trabalho 2
+    Trabalho 3
+
+Estudar:
+
+    heap sort
+    quick sort
+    merge sort
+    heap
+    avl
+    red/black tree
+    left leaning red/black tree
+    234 tree
+    123 tree
+    b-tree
+
+    find n-th sorted element without sorting everything
+    relação de recorrência

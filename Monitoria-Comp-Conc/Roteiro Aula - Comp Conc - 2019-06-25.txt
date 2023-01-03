@@ -1,0 +1,32 @@
+# Roteiro da aula de 25/06/2019 de Computação Concorrente
+
+Problema do Jantar dos Filósofos
+
+1) Explicação do problema
+
+  1.1) Propriedades do problema
+
+    a) Invariantes:
+
+    - comem ou pensam
+    - para comer precisa de 2 palitos adjacentes
+    - pegar palito é ação atômica
+    - o filósofo decide quando comer
+
+    b) Variantes por tempo:
+
+    - onde cada filósofo deve se sentar
+    - protocolo estabelecido entre filósofos
+
+  1.2) Problemas
+
+    a) Deadlock
+
+    b) Starvation
+
+    - livelock
+    - starvation por sincronia indesejada
+    - starvation por priorização indesejada
+    - starvation de segunda ordem
+
+2) Falar do formulário pra semana que vem

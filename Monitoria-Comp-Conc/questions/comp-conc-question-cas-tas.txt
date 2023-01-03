@@ -1,0 +1,22 @@
+# Consenso
+
+Implemente a operação test-and-set usando uma operação compare-and-swap.
+
+    R: tas(x) => cas(x, 0, 1)
+
+Tente implementar a operação compare-and-swap usando test-and-set.
+
+    R: 
+      cas(x, a, b) => {
+        while(tas(x.lock) == 0) {
+          var old = x.value
+          if (x.value == a) x.value = b;
+          x.lock = 0
+          return old
+        }
+      }
+
+Você consegue fazer isso sem usar loops? Explique por que isso não é possível.
+Dica: qual é o número de consenso da operação TAS e da operação CAS?
+
+R: Não. O número de consenso do TAS é 2, enquanto o do CAS é infinito.
