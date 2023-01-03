@@ -70,7 +70,7 @@ def draw(data, cmap, title):
     plt.show()
 
 def drawPlate(data, cmap, title):
-    data = np.reshape(data, (Nx, Ny))
+    data = np.reshape(data, (Ny, Nx)) # issue 1: tava assim (Nx, Ny)
     fig = plt.figure()
     ax1 = fig.add_subplot(111)
     ax1.imshow(data, interpolation="nearest", cmap=cmap, vmin=0.0, vmax=vmax)

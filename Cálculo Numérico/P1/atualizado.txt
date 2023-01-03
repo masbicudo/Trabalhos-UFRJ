@@ -1,0 +1,24 @@
+Grupo 6 - Miguel Angelo Santos Bicudo, Elvis Nobrega e Thiago Nascimento Oliveira.
+
+No arquivo estão os códigos fonte, além das contas feitas para resolver as questões 3 e 4, e alguns códigos úteis de onde tiramos como fazer várias coisas, como por exemplo gráficos animados.
+
+DREs
+116033119 - Miguel
+116011484 - Elvis
+111201898 - Thiago
+
+Código fonte:
+
+    Atualizei os arquivos para permitir uso de exp(x) no input das funções.
+    Isso foi necessário para montar a imagem exatamente como o que estava na prova.
+
+
+Imagens da execução dos programas:
+
+    - diretório \img
+
+
+Vídeo no YouTube da simulação da questão 4:
+
+    - https://www.youtube.com/watch?v=FmqdnKjlglY
+
